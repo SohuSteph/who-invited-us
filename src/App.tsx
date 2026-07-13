@@ -43,6 +43,14 @@ const LONG_TERM = [
   'Become a trusted platform for understanding how young people experience the modern world.',
 ]
 
+const MEDIA_FORMATS = [
+  'PDF reports',
+  'YouTube films',
+  'Blog essays',
+  'Vlog diaries',
+  'Spotify audio',
+]
+
 function App() {
   return (
     <div className="page">
@@ -73,7 +81,7 @@ function App() {
               <a href="#project">Project</a>
             </li>
             <li>
-              <a href="#team">Team</a>
+              <a href="#media">Media</a>
             </li>
             <li>
               <a href="#help">Get involved</a>
@@ -245,6 +253,126 @@ function App() {
                   ))}
                 </ul>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="media" id="media" aria-labelledby="media-title">
+          <div className="section-shell">
+            <p className="eyebrow dark">Stories & media</p>
+            <h2 className="section-title" id="media-title">
+              Built for reports, films, writing, and audio.
+            </h2>
+            <p className="section-lede media-intro">
+              Each project can publish across formats — research PDFs, YouTube
+              documentaries, blog essays, vlog diaries, and Spotify conversations.
+              Examples below show how that content will live on the site.
+            </p>
+            <ul className="format-pills" aria-label="Supported formats">
+              {MEDIA_FORMATS.map((format) => (
+                <li key={format}>{format}</li>
+              ))}
+            </ul>
+
+            <div className="media-grid">
+              <article className="media-block media-block-wide">
+                <header className="media-block-head">
+                  <p className="media-kind">PDF report</p>
+                  <h3>Sample research brief</h3>
+                  <p>
+                    Embed public reports and findings so readers can skim or download
+                    the full PDF.
+                  </p>
+                </header>
+                <div className="pdf-frame">
+                  <iframe
+                    title="Sample research brief PDF"
+                    src="/media/sample-research-brief.pdf"
+                  />
+                </div>
+                <a
+                  className="btn-outline-dark"
+                  href="/media/sample-research-brief.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open PDF <span aria-hidden="true">→</span>
+                </a>
+              </article>
+
+              <article className="media-block">
+                <header className="media-block-head">
+                  <p className="media-kind">YouTube · Film</p>
+                  <h3>Documentary embed</h3>
+                  <p>Feature-length and short films hosted on YouTube, playable on-site.</p>
+                </header>
+                <div className="embed-frame">
+                  <iframe
+                    title="Example documentary on YouTube"
+                    src="https://www.youtube-nocookie.com/embed/D9Ihs241zeg"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
+                </div>
+              </article>
+
+              <article className="media-block">
+                <header className="media-block-head">
+                  <p className="media-kind">YouTube · Vlog</p>
+                  <h3>Field diary embed</h3>
+                  <p>Shorter vlogs and behind-the-scenes notes from story collection.</p>
+                </header>
+                <div className="embed-frame">
+                  <iframe
+                    title="Example vlog on YouTube"
+                    src="https://www.youtube-nocookie.com/embed/hT_nvWreIhg"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
+                </div>
+              </article>
+
+              <article className="media-block">
+                <header className="media-block-head">
+                  <p className="media-kind">Blog</p>
+                  <h3>What “good daughter” really costs</h3>
+                  <p className="blog-meta">Essay · Example post</p>
+                </header>
+                <div className="blog-body">
+                  <p>
+                    Family expectation is not always loud. Sometimes it is a quiet
+                    checklist — grades, caretaking, marriage timelines — that shapes who
+                    young women believe they are allowed to become.
+                  </p>
+                  <p>
+                    This is a placeholder blog layout for long-form writing that sits
+                    beside films and survey findings from The Good Daughter Project.
+                  </p>
+                  <a className="text-link" href="#project">
+                    Read with the project <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </article>
+
+              <article className="media-block">
+                <header className="media-block-head">
+                  <p className="media-kind">Spotify · Audio</p>
+                  <h3>Podcast / conversation embed</h3>
+                  <p>Interviews and audio essays listeners can play without leaving the page.</p>
+                </header>
+                <div className="spotify-frame">
+                  <iframe
+                    title="Example Spotify episode"
+                    src="https://open.spotify.com/embed/episode/7makk4oTQel546B0PZlDM5?utm_source=generator"
+                    loading="lazy"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  />
+                </div>
+              </article>
             </div>
           </div>
         </section>
