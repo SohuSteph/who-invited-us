@@ -1,121 +1,281 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 
+const STAGES = [
+  {
+    num: '01',
+    title: 'Research',
+    body: 'Surveys, literature reviews, and expert input that ground every story in evidence.',
+  },
+  {
+    num: '02',
+    title: 'Story Collection',
+    body: 'Interviews and personal narratives that capture how young people actually live and think.',
+  },
+  {
+    num: '03',
+    title: 'Production',
+    body: 'Documentary films and digital storytelling crafted for clarity, care, and impact.',
+  },
+  {
+    num: '04',
+    title: 'Publication',
+    body: 'Reports, films, and public engagement that turn research into shared understanding.',
+  },
+]
+
+const PROJECT_OUTPUTS = [
+  'Public surveys',
+  'Interviews',
+  'A documentary film',
+  'A research report',
+  'Social media content',
+]
+
+const SHORT_TERM = [
+  'Produce meaningful, research-backed stories.',
+  'Build an engaged community.',
+  'Create high-quality documentary content.',
+]
+
+const LONG_TERM = [
+  'Develop a global archive of youth experiences.',
+  'Publish original research.',
+  'Become a trusted platform for understanding how young people experience the modern world.',
+]
+
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="page">
+      <a className="skip" href="#main">
+        Skip to content
+      </a>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
+      <header className="site-header">
+        <nav className="nav" aria-label="Primary">
+          <ul className="nav-group">
             <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
+              <a href="#about">About</a>
             </li>
             <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
+              <a href="#why">Why</a>
+            </li>
+            <li>
+              <a href="#process">How we work</a>
             </li>
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
+
+          <a className="brand" href="#top" aria-label="Who Invited Us home">
+            Who Invited Us<span aria-hidden="true">?</span>
+          </a>
+
+          <ul className="nav-group nav-group-right">
             <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
+              <a href="#project">Project</a>
             </li>
             <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
+              <a href="#team">Team</a>
             </li>
             <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
+              <a href="#help">Get involved</a>
             </li>
           </ul>
-        </div>
-      </section>
+        </nav>
+      </header>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <main id="main">
+        <section className="hero" id="top" aria-labelledby="hero-brand">
+          <div className="hero-media" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=2000&q=80"
+              alt=""
+            />
+            <div className="hero-shade" />
+          </div>
+
+          <div className="hero-copy">
+            <p className="hero-brand" id="hero-brand">
+              Who Invited Us<span aria-hidden="true">?</span>
+            </p>
+            <h1 className="hero-headline">
+              Research-driven stories about how young people live and think.
+            </h1>
+            <p className="hero-lede">
+              Documentaries, interviews, surveys, and public reports — turning real
+              experience and evidence into content people can actually use.
+            </p>
+            <div className="hero-actions">
+              <a className="btn-primary" href="#project">
+                Our first project <span aria-hidden="true">→</span>
+              </a>
+              <a className="btn-ghost-dark" href="#help">
+                Get involved
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="spotlight" id="about" aria-labelledby="about-title">
+          <div className="spotlight-inner">
+            <p className="eyebrow">What we are building</p>
+            <h2 className="spotlight-title" id="about-title">
+              A structured way to understand and document youth experience.
+            </h2>
+            <div className="spotlight-grid">
+              <p>
+                Who Invited Us? is a research-driven storytelling initiative that explores
+                the experiences, challenges, and aspirations of young people through
+                documentaries, interviews, surveys, and public reports.
+              </p>
+              <p>
+                Our goal is to bridge the gap between academic research and everyday
+                conversations by turning real stories and evidence into engaging,
+                accessible content.
+              </p>
+            </div>
+            <a className="btn-outline" href="#why">
+              Why this matters <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+
+        <section className="why" id="why" aria-labelledby="why-title">
+          <div className="section-shell">
+            <p className="eyebrow dark">Why we are doing this</p>
+            <h2 className="section-title" id="why-title">
+              Too many youth issues are oversimplified — or poorly understood.
+            </h2>
+            <p className="section-lede">
+              Family expectations, identity, relationships, career pressure, loneliness,
+              and social change shape young lives every day. We document these experiences
+              authentically so people can better understand one another through both
+              research and storytelling.
+            </p>
+          </div>
+        </section>
+
+        <section className="process" id="process" aria-labelledby="process-title">
+          <div className="section-shell">
+            <p className="eyebrow">How we work</p>
+            <h2 className="section-title light" id="process-title">
+              Each project follows four stages.
+            </h2>
+            <ol className="stages">
+              {STAGES.map((stage) => (
+                <li className="stage" key={stage.num}>
+                  <span className="stage-num" aria-hidden="true">
+                    {stage.num}
+                  </span>
+                  <h3>{stage.title}</h3>
+                  <p>{stage.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="project" id="project" aria-labelledby="project-title">
+          <div className="project-media" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=1600&q=80"
+              alt=""
+            />
+            <div className="project-shade" />
+          </div>
+          <div className="project-copy">
+            <p className="eyebrow">Our first project</p>
+            <h2 className="project-title" id="project-title">
+              The Good Daughter Project
+            </h2>
+            <p className="project-lede">
+              A study exploring how family expectations shape the choices,
+              responsibilities, opportunities, and identities of young women.
+            </p>
+            <ul className="project-list">
+              {PROJECT_OUTPUTS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <a className="btn-primary" href="#help">
+              Support this work <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+
+        <section className="team" id="team" aria-labelledby="team-title">
+          <div className="section-shell">
+            <p className="eyebrow dark">Team</p>
+            <h2 className="section-title" id="team-title">
+              The people behind the work.
+            </h2>
+            <div className="team-grid">
+              <article className="person">
+                <h3>Palak Gupta</h3>
+                <p>
+                  Research, strategy, analysis, partnerships, and project development.
+                </p>
+              </article>
+              <article className="person">
+                <h3>Samaira Bhatia</h3>
+                <p>Filmmaking, editing, storytelling, and creative direction.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="goals" id="goals" aria-labelledby="goals-title">
+          <div className="section-shell">
+            <p className="eyebrow">What we hope to achieve</p>
+            <h2 className="section-title light" id="goals-title">
+              From early stories to a lasting archive.
+            </h2>
+            <div className="goals-grid">
+              <div>
+                <h3>Short term</h3>
+                <ul>
+                  {SHORT_TERM.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3>Long term</h3>
+                <ul>
+                  {LONG_TERM.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="help" id="help" aria-labelledby="help-title">
+          <div className="help-inner">
+            <p className="eyebrow dark">How you could help</p>
+            <h2 className="section-title" id="help-title">
+              We are early — and building with partners.
+            </h2>
+            <p className="section-lede">
+              We are looking for people who can contribute ideas, expertise, research
+              support, outreach, strategic guidance, or project coordination.
+            </p>
+            <a
+              className="btn-primary"
+              href="mailto:hello@whoinvitedus.org?subject=Who%20Invited%20Us%20—%20I'd%20like%20to%20help"
+            >
+              Reach out <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <p className="footer-brand">Who Invited Us?</p>
+        <p className="footer-note">
+          Research-driven storytelling about how young people live and think.
+        </p>
+      </footer>
+    </div>
   )
 }
 
