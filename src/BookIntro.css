@@ -1,0 +1,584 @@
+/* ——— Cinematic book intro (white gallery stage) ——— */
+
+.cine-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: clamp(1.5rem, 4vh, 2.75rem);
+  background:
+    radial-gradient(ellipse 52% 40% at 50% 44%, rgba(212, 175, 55, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 90% 80% at 50% 40%, #ffffff 0%, #fbfaf7 55%, #f1ede4 100%);
+  overflow: hidden;
+  transition: opacity 550ms cubic-bezier(0.4, 0, 0.6, 1) 280ms;
+}
+
+.cine-intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ——— Hint & skip ——— */
+
+.cine-hint {
+  margin: 0;
+  font-family: var(--display, 'Barlow Condensed', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #a8842a;
+  text-align: center;
+  transition: opacity 400ms ease;
+}
+
+.cine-intro.is-leaving .cine-hint {
+  opacity: 0;
+}
+
+.cine-skip {
+  padding: 0.5rem 1rem;
+  font-family: var(--display, 'Barlow Condensed', sans-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey, #6b7280);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 250ms ease;
+}
+
+.cine-skip:hover,
+.cine-skip:focus-visible {
+  color: #a8842a;
+}
+
+/* ——— Stage ——— */
+
+.cine-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.cine-glow {
+  position: absolute;
+  width: 175%;
+  height: 155%;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 52%,
+    rgba(212, 175, 55, 0.16) 0%,
+    rgba(74, 44, 90, 0.05) 45%,
+    transparent 70%
+  );
+  filter: blur(8px);
+  animation: glow-pulse 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* ——— Book ——— */
+
+.cine-book {
+  position: relative;
+  width: min(300px, 64vw);
+  aspect-ratio: 0.72;
+  perspective: 1900px;
+  cursor: pointer;
+  outline: none;
+  animation: book-float 5.5s ease-in-out infinite;
+  transition: transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cine-book:focus-visible {
+  outline: 2px solid rgba(168, 132, 42, 0.7);
+  outline-offset: 18px;
+}
+
+.cine-intro.is-turning .cine-book {
+  transform: scale(1.05);
+}
+
+.cine-intro.is-leaving .cine-book {
+  transform: scale(1.12);
+}
+
+@keyframes book-float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  50% {
+    translate: 0 -11px;
+    rotate: 0.5deg;
+  }
+}
+
+.cine-book-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* Resting pose: a touch of perspective so edges & depth read */
+  transform: rotateY(-12deg) rotateX(2deg);
+  transition: transform 1150ms cubic-bezier(0.3, 1, 0.32, 1);
+}
+
+/* Recentre and square up as the cover swings out to the left */
+.cine-intro.is-open .cine-book-inner {
+  transform: translateX(9%) rotateY(0deg) rotateX(4deg);
+}
+
+/* Gilded page-block edge on the right of the closed book */
+.cine-book-inner::after {
+  content: '';
+  position: absolute;
+  top: 1.4%;
+  bottom: 1.4%;
+  right: -9px;
+  width: 9px;
+  border-radius: 0 2px 2px 0;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(70, 50, 12, 0.28) 0 1px,
+      transparent 1px 3px
+    ),
+    linear-gradient(90deg, #b5922f 0%, #dfc167 45%, #c9a53f 70%, #96762a 100%);
+  box-shadow: inset -1.5px 0 2px rgba(60, 40, 10, 0.4);
+  transform: translateZ(6px);
+  transition: opacity 500ms ease;
+}
+
+.cine-intro.is-open .cine-book-inner::after {
+  opacity: 0;
+}
+
+/* ——— Base page ——— */
+
+.cine-page {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 2px 5px 5px 2px;
+  background:
+    linear-gradient(105deg, rgba(90, 70, 45, 0.16) 0%, transparent 12%),
+    linear-gradient(160deg, #fbf9f5 0%, #f6f2ea 55%, #efe8da 100%);
+  box-shadow: inset 0 0 34px rgba(100, 80, 50, 0.12);
+}
+
+.cine-page-diamond {
+  width: 14px;
+  height: 14px;
+  rotate: 45deg;
+  border: 1.5px solid rgba(176, 140, 44, 0.8);
+  background: rgba(212, 175, 55, 0.22);
+}
+
+/* ——— Leaves ——— */
+
+.cine-leaf {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: translateZ(calc((11 - var(--i)) * 2px));
+  border-radius: 2px 5px 5px 2px;
+  background:
+    linear-gradient(105deg, rgba(90, 70, 45, 0.14) 0%, transparent 11%),
+    linear-gradient(165deg, #fbf9f5 0%, #f7f3eb 50%, #f0eadd 100%);
+  box-shadow:
+    inset 0 0 30px rgba(100, 80, 50, 0.1),
+    0 0 0 0.5px rgba(120, 95, 60, 0.14);
+}
+
+/* Travelling shade that sweeps the page as it lifts */
+.cine-leaf::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, rgba(40, 25, 55, 0.22) 0%, transparent 45%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cine-leaf-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+}
+
+.cine-intro.is-turning .cine-leaf {
+  animation: leaf-turn 400ms cubic-bezier(0.4, 0.05, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 95ms);
+}
+
+.cine-intro.is-turning .cine-leaf::after {
+  animation: leaf-shade 400ms ease-in-out both;
+  animation-delay: calc(var(--i) * 95ms);
+}
+
+/* Lift off the stack mid-flight, then settle into a softly fanned pile */
+@keyframes leaf-turn {
+  0% {
+    transform: translateZ(calc((11 - var(--i)) * 2px)) rotateX(0deg) rotateY(0deg);
+  }
+  42% {
+    transform: translateZ(calc((11 - var(--i)) * 2px + 16px)) rotateX(3deg) rotateY(-72deg);
+  }
+  100% {
+    transform: translateZ(calc((11 - var(--i)) * 2px)) rotateX(0deg)
+      rotateY(var(--leaf-end, -166deg));
+  }
+}
+
+@keyframes leaf-shade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+}
+
+/* Title page content */
+
+.cine-title-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.8rem, 2.4vh, 1.3rem);
+  padding: 12%;
+  text-align: center;
+}
+
+.cine-page-rule {
+  position: relative;
+  width: 110px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(176, 140, 44, 0.85) 18%,
+    rgba(176, 140, 44, 0.85) 82%,
+    transparent
+  );
+}
+
+.cine-page-rule::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  translate: -50% -50%;
+  rotate: 45deg;
+  background: #f8f6f2;
+  border: 1.2px solid rgba(176, 140, 44, 0.9);
+}
+
+.cine-page-title {
+  margin: 0;
+  font-family: var(--serif, 'Libre Baskerville', serif);
+  font-style: italic;
+  font-size: clamp(1.35rem, 5.4vw, 1.9rem);
+  line-height: 1.25;
+  color: #3b2348;
+}
+
+.cine-page-sub {
+  margin: 0;
+  font-family: var(--display, 'Barlow Condensed', sans-serif);
+  font-size: clamp(0.6rem, 2vw, 0.72rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.9;
+  color: var(--grey, #6b7280);
+}
+
+/* Enchanted rune writing on the leaves */
+
+.cine-rune-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.52em;
+  width: 76%;
+  font-family: 'Segoe UI Symbol', 'Apple Symbols', 'Noto Sans Symbols 2', 'Noto Sans Symbols',
+    sans-serif;
+  font-size: clamp(0.58rem, 2.1vw, 0.74rem);
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: rgba(74, 44, 90, 0.82);
+  text-shadow:
+    0 0 5px rgba(122, 74, 160, 0.55),
+    0 0 12px rgba(212, 175, 55, 0.28);
+  user-select: none;
+}
+
+.cine-rune-line {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.cine-rune-line:nth-child(4n) {
+  color: rgba(168, 132, 42, 0.78);
+  text-shadow:
+    0 0 5px rgba(212, 175, 55, 0.5),
+    0 0 10px rgba(122, 74, 160, 0.3);
+}
+
+/* ——— Cover ——— */
+
+.cine-cover {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: translateZ(15px);
+  transition: transform 1150ms cubic-bezier(0.3, 1.04, 0.32, 1);
+}
+
+.cine-intro.is-open .cine-cover {
+  transform: translateZ(15px) rotateY(-168deg);
+}
+
+.cine-cover-front,
+.cine-cover-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 3px 7px 7px 3px;
+}
+
+.cine-cover-front {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(130% 100% at 28% 16%, rgba(255, 240, 210, 0.07) 0%, transparent 55%),
+    radial-gradient(120% 120% at 78% 92%, rgba(0, 0, 0, 0.28) 0%, transparent 55%),
+    repeating-linear-gradient(47deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-43deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 4px),
+    linear-gradient(140deg, #362442 0%, #291a33 48%, #1d1424 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+    inset 3px 0 10px rgba(0, 0, 0, 0.45),
+    inset -1px 0 2px rgba(255, 240, 210, 0.06),
+    inset 0 0 60px rgba(0, 0, 0, 0.25),
+    0 22px 44px -18px rgba(31, 31, 31, 0.5);
+}
+
+/* Spine shading strip */
+.cine-cover-front::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 9%;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 55%,
+    transparent 100%
+  );
+}
+
+/* Gold frame + interior hairline */
+.cine-cover-front::after {
+  content: '';
+  position: absolute;
+  inset: 5.5%;
+  border: 1px solid rgba(201, 165, 63, 0.8);
+  border-radius: 2px;
+  outline: 1px solid rgba(201, 165, 63, 0.3);
+  outline-offset: -9px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.cine-cover-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.9rem, 2.6vh, 1.4rem);
+  padding: 14%;
+  text-align: center;
+}
+
+/* Gold-foil title */
+.cine-cover-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  font-family: var(--serif, 'Libre Baskerville', serif);
+  font-size: clamp(1.05rem, 4.4vw, 1.5rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #ecd47e 0%, #cfa93d 52%, #9a7a2b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.55));
+}
+
+.cine-cover-rule {
+  width: 92px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 165, 63, 0.65) 20%,
+    rgba(201, 165, 63, 0.65) 80%,
+    transparent
+  );
+}
+
+.cine-cover-diamond {
+  width: 30px;
+  height: 30px;
+  rotate: 45deg;
+  border: 1.5px solid rgba(201, 165, 63, 0.85);
+  display: grid;
+  place-items: center;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.cine-cover-diamond::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(201, 165, 63, 0.45);
+}
+
+.cine-cover-diamond::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  background: linear-gradient(135deg, #e5c968 0%, #b8932f 100%);
+}
+
+/* Inner leather (visible once the cover opens) */
+.cine-cover-back {
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(47deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 3px),
+    linear-gradient(140deg, #2b1c35 0%, #221629 55%, #1a1220 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+    inset 0 0 48px rgba(0, 0, 0, 0.3),
+    0 18px 36px -16px rgba(31, 31, 31, 0.4);
+}
+
+.cine-cover-back::after {
+  content: '';
+  position: absolute;
+  inset: 7%;
+  border: 1px solid rgba(201, 165, 63, 0.3);
+  border-radius: 2px;
+}
+
+/* ——— Grounding shadow ——— */
+
+.cine-book-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -62px;
+  width: 82%;
+  height: 28px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(31, 31, 31, 0.4), transparent 70%);
+  filter: blur(8px);
+  animation: shadow-breathe 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shadow-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9);
+    opacity: 0.72;
+  }
+}
+
+/* ——— Exit bloom ——— */
+
+.cine-bloom {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.cine-bloom-dot {
+  width: 12vmax;
+  height: 12vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f8f6f2 58%, rgba(248, 246, 242, 0.92) 78%, transparent 100%);
+  transform: scale(0);
+  transition: transform 760ms cubic-bezier(0.6, 0, 0.7, 0.4);
+}
+
+.cine-intro.is-leaving .cine-bloom-dot {
+  transform: scale(24);
+}
+
+/* ——— Reduced motion ——— */
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-book,
+  .cine-glow,
+  .cine-book-shadow {
+    animation: none;
+  }
+
+  .cine-intro,
+  .cine-book-inner,
+  .cine-cover,
+  .cine-bloom-dot {
+    transition-duration: 1ms;
+  }
+
+  .cine-intro.is-turning .cine-leaf {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+
+  .cine-intro.is-turning .cine-leaf::after {
+    animation: none;
+  }
+}

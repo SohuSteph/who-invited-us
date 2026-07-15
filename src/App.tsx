@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react'
+import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
+import BookIntro from './BookIntro'
 import './App.css'
 
 const STAGES = [
@@ -52,8 +56,92 @@ const MEDIA_FORMATS = [
 ]
 
 function App() {
+  const [showIntro, setShowIntro] = useState(true)
+
+  // Fluid inertia scrolling + scroll-linked text reveals once the site is entered
+  useEffect(() => {
+    if (showIntro) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const lenis = new Lenis({
+      lerp: 0.075,
+      wheelMultiplier: 0.9,
+    })
+
+    let rafId = requestAnimationFrame(function loop(time) {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(loop)
+    })
+
+    // Route in-page anchor clicks through Lenis for eased travel
+    const onClick = (event: MouseEvent) => {
+      const anchor = (event.target as Element | null)?.closest?.('a[href^="#"]')
+      if (!anchor) return
+      const href = anchor.getAttribute('href')
+      if (!href || href === '#') return
+      event.preventDefault()
+      lenis.scrollTo(href, { offset: -80, duration: 1.7 })
+    }
+    document.addEventListener('click', onClick)
+
+    // Text blocks fade in/out with scroll, in both directions.
+    // Selectors are chosen to never nest inside one another.
+    const revealSelectors = [
+      '.hero-brand',
+      '.hero-headline',
+      '.hero-lede',
+      '.hero-actions',
+      '.eyebrow',
+      '.spotlight-title',
+      '.spotlight-grid p',
+      '.spotlight .btn-outline',
+      '.section-title',
+      '.section-lede',
+      '.stage',
+      '.project-title',
+      '.project-lede',
+      '.project-list li',
+      '.project .btn-primary',
+      '.person',
+      '.goals-grid > div',
+      '.format-pills',
+      '.media-block',
+      '.help-inner .btn-primary',
+    ]
+    const revealEls = document.querySelectorAll<HTMLElement>(
+      revealSelectors.map((s) => `main ${s}`).join(', '),
+    )
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-revealed', entry.isIntersecting)
+        })
+      },
+      { rootMargin: '-6% 0px -8% 0px', threshold: 0 },
+    )
+
+    revealEls.forEach((el) => {
+      el.setAttribute('data-reveal', '')
+      observer.observe(el)
+    })
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      document.removeEventListener('click', onClick)
+      observer.disconnect()
+      revealEls.forEach((el) => {
+        el.removeAttribute('data-reveal')
+        el.classList.remove('is-revealed')
+      })
+      lenis.destroy()
+    }
+  }, [showIntro])
+
   return (
-    <div className="page">
+    <div className={`page ${showIntro ? 'page-locked' : 'page-entered'}`}>
+      {showIntro && <BookIntro onEnter={() => setShowIntro(false)} />}
+
       <a className="skip" href="#main">
         Skip to content
       </a>

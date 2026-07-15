@@ -1,13 +1,23 @@
 :root {
-  --bg: #ffffff;
-  --bg-ink: #0a0a0a;
-  --fg: #0a0a0a;
-  --fg-inverse: #f5f5f5;
-  --muted: #6b6b6b;
-  --muted-inverse: #bdbdbd;
-  --accent: #e10600;
-  --accent-hover: #c10500;
-  --line: #e8e8e8;
+  --charcoal: #1f1f1f;
+  --ivory: #f8f6f2;
+  --forest: #234b3a;
+  --aubergine: #4a2c5a;
+  --grey: #6b7280;
+  --gold: #d4af37;
+
+  --bg: var(--ivory);
+  --bg-ink: var(--charcoal);
+  --bg-forest: var(--forest);
+  --bg-aubergine: var(--aubergine);
+  --fg: var(--charcoal);
+  --fg-inverse: var(--ivory);
+  --muted: var(--grey);
+  --muted-inverse: #b8b0a8;
+  --accent: var(--gold);
+  --accent-hover: #b8962e;
+  --accent-secondary: var(--forest);
+  --line: #e4dfd6;
 
   --serif: 'Libre Baskerville', 'Times New Roman', serif;
   --sans: 'Barlow', 'Helvetica Neue', sans-serif;
