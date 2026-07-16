@@ -198,6 +198,7 @@ function App() {
       </a>
 
       <header className="site-header">
+        <div className="header-filigree" aria-hidden="true" />
         <nav className="nav" aria-label="Primary">
           <ul className="nav-group">
             <li>
@@ -243,6 +244,12 @@ function App() {
           </div>
 
           <div className="hero-copy">
+            <div className="illum-corners" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
             <p className="hero-brand" id="hero-brand">
               Who Invited Us<span aria-hidden="true">?</span>
             </p>
@@ -271,12 +278,17 @@ function App() {
 
         <section className="spotlight" id="about" aria-labelledby="about-title">
           <div className="spotlight-inner">
+            <div className="ornament" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow">What we are building</p>
             <h2 className="spotlight-title" id="about-title">
               A structured way to understand and document youth experience.
             </h2>
             <div className="spotlight-grid">
-              <p>
+              <p className="drop-cap">
                 Who Invited Us? is a research-driven storytelling initiative that explores
                 the experiences, challenges, and aspirations of young people through
                 podcasts, documentaries, interviews, surveys, and public reports.
@@ -298,6 +310,11 @@ function App() {
             <span className="why-mark" aria-hidden="true">
               ?
             </span>
+            <div className="ornament" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow dark">Why we are doing this</p>
             <h2 className="section-title" id="why-title">
               Too many youth issues are oversimplified — or poorly understood.
@@ -313,6 +330,11 @@ function App() {
 
         <section className="process" id="process" aria-labelledby="process-title">
           <div className="section-shell">
+            <div className="ornament ornament-light" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow">How we work</p>
             <h2 className="section-title light" id="process-title">
               Each project follows four stages.
@@ -340,6 +362,17 @@ function App() {
             <div className="project-shade" />
           </div>
           <div className="project-copy">
+            <div className="illum-corners illum-corners-dark" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="ornament ornament-light" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow">Our first project</p>
             <h2 className="project-title" id="project-title">
               The Good Daughter Project
@@ -361,6 +394,11 @@ function App() {
 
         <section className="goals" id="goals" aria-labelledby="goals-title">
           <div className="section-shell">
+            <div className="ornament ornament-light" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow">What we hope to achieve</p>
             <h2 className="section-title light" id="goals-title">
               From early stories to a lasting archive.
@@ -388,6 +426,11 @@ function App() {
 
         <section className="media" id="media" aria-labelledby="media-title">
           <div className="section-shell">
+            <div className="ornament" aria-hidden="true">
+              <span className="ornament-line" />
+              <span className="ornament-diamond" />
+              <span className="ornament-line" />
+            </div>
             <p className="eyebrow dark">Library</p>
             <h2 className="section-title" id="media-title">
               Listen, read, then weigh in.
@@ -503,7 +546,18 @@ function App() {
 
         <section className="help" id="help" aria-labelledby="help-title">
           <div className="help-frame">
+            <div className="frame-corners" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
             <div className="help-inner">
+              <div className="ornament" aria-hidden="true">
+                <span className="ornament-line" />
+                <span className="ornament-diamond" />
+                <span className="ornament-line" />
+              </div>
               <p className="eyebrow dark">How you could help</p>
               <h2 className="section-title" id="help-title">
                 We are early — and building with partners.
@@ -524,12 +578,17 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <div className="footer-rule" aria-hidden="true" />
+        <div className="ornament ornament-light footer-ornament" aria-hidden="true">
+          <span className="ornament-line" />
+          <span className="ornament-diamond" />
+          <span className="ornament-line" />
+        </div>
         <p className="footer-brand">Who Invited Us?</p>
         <p className="footer-baseline">Samaira Bhatia · Palak Gupta</p>
         <p className="footer-note">
           Podcast conversations, research documents, and space for public judgment.
         </p>
+        <p className="footer-colophon">Archive · Research · Judgment</p>
         <p className="footer-year">© {new Date().getFullYear()}</p>
       </footer>
     </div>

@@ -5,6 +5,8 @@
   --aubergine: #4a2c5a;
   --grey: #6b7280;
   --gold: #d4af37;
+  --gold-deep: #a88420;
+  --ink-sepia: #2a241c;
 
   --bg: var(--ivory);
   --bg-ink: var(--charcoal);
@@ -18,11 +20,13 @@
   --accent-hover: #b8962e;
   --accent-secondary: var(--forest);
   --line: #e4dfd6;
-  --paper: #f3efe8;
+  --paper: #f1ebe1;
+  --parchment: #ebe3d4;
 
   --serif: 'Libre Baskerville', 'Times New Roman', serif;
   --sans: 'Barlow', 'Helvetica Neue', sans-serif;
   --display: 'Barlow Condensed', 'Helvetica Neue', sans-serif;
+  --ornament: 'Cinzel', 'Libre Baskerville', serif;
 
   --pad: clamp(1.25rem, 4vw, 3.5rem);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);

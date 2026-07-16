@@ -17,7 +17,6 @@ function BookIntro({ onEnter }: BookIntroProps) {
       timers.current.push(window.setTimeout(fn, ms))
     }
 
-    // Staged title-sequence reveals
     schedule(280, () => setBeat(1))
     schedule(900, () => setBeat(2))
     schedule(1600, () => setBeat(3))
@@ -63,21 +62,37 @@ function BookIntro({ onEnter }: BookIntroProps) {
         <div className="doc-intro-grain" />
       </div>
 
+      <div className="doc-intro-filigree" aria-hidden="true" />
+
       <div className="doc-intro-frame" aria-hidden="true">
         <span className="doc-frame-edge doc-frame-top" />
         <span className="doc-frame-edge doc-frame-bottom" />
+        <span className="doc-frame-rail doc-frame-rail-l" />
+        <span className="doc-frame-rail doc-frame-rail-r" />
+        <div className="doc-frame-corners">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
       </div>
 
       <div className="doc-intro-copy">
-        <p className="doc-intro-eyebrow">
-          Research · Film · Conversation
-        </p>
+        <div className="doc-intro-ornament" aria-hidden="true">
+          <span className="doc-ornament-line" />
+          <span className="doc-ornament-diamond" />
+          <span className="doc-ornament-line" />
+        </div>
+
+        <p className="doc-intro-eyebrow">Research · Film · Conversation</p>
 
         <p className="doc-intro-brand" id="doc-intro-brand">
           Who Invited Us<span aria-hidden="true">?</span>
         </p>
 
         <p className="doc-intro-baseline">Samaira Bhatia · Palak Gupta</p>
+
+        <div className="doc-intro-rule" aria-hidden="true" />
 
         <p className="doc-intro-lede">
           Stories and evidence about how young people live and think —
@@ -96,6 +111,10 @@ function BookIntro({ onEnter }: BookIntroProps) {
           </button>
           <p className="doc-intro-hint">or press Enter</p>
         </div>
+
+        <p className="doc-intro-colophon" aria-hidden="true">
+          Archive · Research · Judgment
+        </p>
       </div>
 
       <button type="button" className="doc-intro-skip" onClick={onEnter}>
