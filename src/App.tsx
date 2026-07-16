@@ -142,6 +142,7 @@ function App() {
       '.hero-headline',
       '.hero-lede',
       '.hero-actions',
+      '.hero-scroll',
       '.eyebrow',
       '.spotlight-title',
       '.spotlight-grid p',
@@ -261,6 +262,10 @@ function App() {
                 First project
               </a>
             </div>
+            <a className="hero-scroll" href="#about" aria-label="Scroll to about">
+              <span className="hero-scroll-line" aria-hidden="true" />
+              <span>Scroll</span>
+            </a>
           </div>
         </section>
 
@@ -289,7 +294,10 @@ function App() {
         </section>
 
         <section className="why" id="why" aria-labelledby="why-title">
-          <div className="section-shell">
+          <div className="section-shell why-shell">
+            <span className="why-mark" aria-hidden="true">
+              ?
+            </span>
             <p className="eyebrow dark">Why we are doing this</p>
             <h2 className="section-title" id="why-title">
               Too many youth issues are oversimplified — or poorly understood.
@@ -494,31 +502,35 @@ function App() {
         </section>
 
         <section className="help" id="help" aria-labelledby="help-title">
-          <div className="help-inner">
-            <p className="eyebrow dark">How you could help</p>
-            <h2 className="section-title" id="help-title">
-              We are early — and building with partners.
-            </h2>
-            <p className="section-lede">
-              We are looking for people who can contribute ideas, expertise, research
-              support, outreach, strategic guidance, or project coordination.
-            </p>
-            <a
-              className="btn-primary"
-              href="mailto:hello@whoinvitedus.org?subject=Who%20Invited%20Us%20—%20I'd%20like%20to%20help"
-            >
-              Reach out <span aria-hidden="true">→</span>
-            </a>
+          <div className="help-frame">
+            <div className="help-inner">
+              <p className="eyebrow dark">How you could help</p>
+              <h2 className="section-title" id="help-title">
+                We are early — and building with partners.
+              </h2>
+              <p className="section-lede">
+                We are looking for people who can contribute ideas, expertise, research
+                support, outreach, strategic guidance, or project coordination.
+              </p>
+              <a
+                className="btn-primary"
+                href="mailto:hello@whoinvitedus.org?subject=Who%20Invited%20Us%20—%20I'd%20like%20to%20help"
+              >
+                Reach out <span aria-hidden="true">→</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="site-footer">
+        <div className="footer-rule" aria-hidden="true" />
         <p className="footer-brand">Who Invited Us?</p>
         <p className="footer-baseline">Samaira Bhatia · Palak Gupta</p>
         <p className="footer-note">
           Podcast conversations, research documents, and space for public judgment.
         </p>
+        <p className="footer-year">© {new Date().getFullYear()}</p>
       </footer>
     </div>
   )

@@ -18,6 +18,7 @@
   --accent-hover: #b8962e;
   --accent-secondary: var(--forest);
   --line: #e4dfd6;
+  --paper: #f3efe8;
 
   --serif: 'Libre Baskerville', 'Times New Roman', serif;
   --sans: 'Barlow', 'Helvetica Neue', sans-serif;
@@ -26,6 +27,8 @@
   --pad: clamp(1.25rem, 4vw, 3.5rem);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --duration: 280ms;
+
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
 }
 
 *,
@@ -47,6 +50,11 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(212, 175, 55, 0.35);
+  color: var(--fg);
 }
 
 #root {
