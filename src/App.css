@@ -540,6 +540,7 @@
 }
 
 .media-tab {
+  position: relative;
   min-height: 44px;
   padding: 0.55rem 1rem;
   font-family: var(--display);
@@ -549,10 +550,26 @@
   text-transform: uppercase;
   color: var(--fg);
   border: 1px solid transparent;
+  animation: chip-pop 520ms var(--ease) both;
   transition:
-    color var(--duration) var(--ease),
-    border-color var(--duration) var(--ease),
-    background var(--duration) var(--ease);
+    color 320ms var(--ease),
+    border-color 320ms var(--ease),
+    background 320ms var(--ease),
+    transform 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+
+.media-tab:nth-child(1) {
+  animation-delay: 40ms;
+}
+.media-tab:nth-child(2) {
+  animation-delay: 100ms;
+}
+.media-tab:nth-child(3) {
+  animation-delay: 160ms;
+}
+.media-tab:nth-child(4) {
+  animation-delay: 220ms;
 }
 
 .media-tab:hover {
@@ -563,10 +580,48 @@
   border-color: var(--fg);
   background: var(--fg);
   color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -12px rgba(31, 31, 31, 0.55);
 }
 
 .media-panel {
   min-width: 0;
+  animation: panel-rise 560ms var(--ease) both;
+}
+
+@keyframes panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes chip-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes surface-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .format-pills {
@@ -801,20 +856,51 @@
   text-transform: uppercase;
   color: var(--fg);
   background: #fff;
+  animation: chip-pop 480ms var(--ease) both;
   transition:
-    background var(--duration) var(--ease),
-    color var(--duration) var(--ease),
-    border-color var(--duration) var(--ease);
+    background 320ms var(--ease),
+    color 320ms var(--ease),
+    border-color 320ms var(--ease),
+    transform 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+
+.pdf-filter:nth-child(1) {
+  animation-delay: 40ms;
+}
+.pdf-filter:nth-child(2) {
+  animation-delay: 90ms;
+}
+.pdf-filter:nth-child(3) {
+  animation-delay: 140ms;
+}
+.pdf-filter:nth-child(4) {
+  animation-delay: 190ms;
+}
+.pdf-filter:nth-child(5) {
+  animation-delay: 240ms;
+}
+.pdf-filter:nth-child(6) {
+  animation-delay: 290ms;
+}
+.pdf-filter:nth-child(7) {
+  animation-delay: 340ms;
+}
+.pdf-filter:nth-child(8) {
+  animation-delay: 390ms;
 }
 
 .pdf-filter:hover {
   border-color: var(--fg);
+  transform: translateY(-2px);
 }
 
 .pdf-filter.is-active {
   background: var(--fg);
   border-color: var(--fg);
   color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -12px rgba(31, 31, 31, 0.5);
 }
 
 .pdf-count {
@@ -866,6 +952,7 @@
   gap: 1.25rem;
   padding-top: 0.5rem;
   border-top: 2px solid var(--fg);
+  animation: surface-rise 560ms var(--ease) both;
 }
 
 .podcast-frame {
@@ -900,21 +987,49 @@
   border: 1px solid var(--line);
   background: #fafafa;
   min-height: 100%;
+  animation: chip-pop 520ms var(--ease) both;
   transition:
-    border-color var(--duration) var(--ease),
-    transform var(--duration) var(--ease),
-    background var(--duration) var(--ease);
+    border-color 320ms var(--ease),
+    transform 320ms var(--ease),
+    background 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+
+.pdf-list .pdf-card:nth-child(1),
+.podcast-list .pdf-card:nth-child(1) {
+  animation-delay: 60ms;
+}
+.pdf-list .pdf-card:nth-child(2),
+.podcast-list .pdf-card:nth-child(2) {
+  animation-delay: 120ms;
+}
+.pdf-list .pdf-card:nth-child(3),
+.podcast-list .pdf-card:nth-child(3) {
+  animation-delay: 180ms;
+}
+.pdf-list .pdf-card:nth-child(4),
+.podcast-list .pdf-card:nth-child(4) {
+  animation-delay: 240ms;
+}
+.pdf-list .pdf-card:nth-child(5),
+.podcast-list .pdf-card:nth-child(5) {
+  animation-delay: 300ms;
+}
+.pdf-list .pdf-card:nth-child(6),
+.podcast-list .pdf-card:nth-child(6) {
+  animation-delay: 360ms;
 }
 
 .pdf-card:hover {
   border-color: var(--fg);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .pdf-card.is-active {
   border-color: var(--accent);
   background: #fff;
   box-shadow: inset 3px 0 0 var(--accent);
+  transform: translateY(-2px);
 }
 
 .pdf-card-badge {
@@ -970,6 +1085,7 @@
   gap: 1.25rem;
   padding-top: 0.5rem;
   border-top: 2px solid var(--fg);
+  animation: surface-rise 560ms var(--ease) both;
 }
 
 .pdf-reader-head {

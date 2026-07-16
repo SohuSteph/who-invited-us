@@ -89,7 +89,7 @@ export function PodcastLibrary({ episodes }: Props) {
       </div>
 
       {active ? (
-        <div className="podcast-player" id="podcast-player">
+        <div className="podcast-player" id="podcast-player" key={active.id}>
           <div className="pdf-reader-head">
             <div>
               <p className="media-kind">

@@ -185,7 +185,7 @@ export function PdfLibrary({ docs }: Props) {
       ) : null}
 
       {active ? (
-        <div className="pdf-reader" id="pdf-reader">
+        <div className="pdf-reader" id="pdf-reader" key={active.id}>
           <div className="pdf-reader-head">
             <div>
               <p className="media-kind">Now reading · {active.category}</p>

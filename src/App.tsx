@@ -411,6 +411,7 @@ function App() {
               role="tabpanel"
               id={`panel-${tab}`}
               aria-labelledby={`tab-${tab}`}
+              key={tab}
             >
               {tab === 'pdfs' ? (
                 <PdfLibrary docs={PDF_DOCS} />
