@@ -1,178 +1,110 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import './BookIntro.css'
 
-type Phase = 'idle' | 'turning' | 'leaving'
+type Phase = 'playing' | 'ready' | 'leaving'
 
 type BookIntroProps = {
   onEnter: () => void
 }
 
-/* Standard Galactic Alphabet–style glyphs (Minecraft enchanting table writing) */
-const GLYPHS = 'ᔑʖᓵ↸ᒷ⎓⊣⍑╎ᒲリ∷𝙹ᑑᓭℸ⚍⍊∴⨅ꖎ'
-
-function runeLine(seed: number, length: number) {
-  let out = ''
-  for (let i = 0; i < length; i++) {
-    out += GLYPHS[(seed * 17 + i * 13 + ((seed + i) % 5)) % GLYPHS.length]
-    if (i % 3 === 2 && i < length - 1) out += ' '
-  }
-  return out
-}
-
-const RUNE_LEAF_COUNT = 9
-
-const RUNE_LEAVES = Array.from({ length: RUNE_LEAF_COUNT }, (_, page) =>
-  Array.from({ length: 11 }, (_, line) => runeLine(page * 31 + line * 7 + 3, 9 + ((page + line) % 5))),
-)
-
 function BookIntro({ onEnter }: BookIntroProps) {
-  const [phase, setPhase] = useState<Phase>('idle')
-  const [hovered, setHovered] = useState(false)
+  const [phase, setPhase] = useState<Phase>('playing')
+  const [beat, setBeat] = useState(0)
   const timers = useRef<number[]>([])
 
-  const isBusy = phase === 'turning' || phase === 'leaving'
-  const isOpen = hovered || isBusy
-
   useEffect(() => {
-    const pending = timers.current
+    const schedule = (ms: number, fn: () => void) => {
+      timers.current.push(window.setTimeout(fn, ms))
+    }
+
+    // Staged title-sequence reveals
+    schedule(280, () => setBeat(1))
+    schedule(900, () => setBeat(2))
+    schedule(1600, () => setBeat(3))
+    schedule(2300, () => setBeat(4))
+    schedule(3000, () => {
+      setBeat(5)
+      setPhase('ready')
+    })
+
     return () => {
-      pending.forEach((t) => window.clearTimeout(t))
+      timers.current.forEach((id) => window.clearTimeout(id))
     }
   }, [])
 
   function handleEnter() {
-    if (isBusy) return
-    setPhase('turning')
-    timers.current.push(
-      window.setTimeout(() => {
-        setPhase('leaving')
-        timers.current.push(window.setTimeout(onEnter, 750))
-      }, 1280),
-    )
+    if (phase === 'leaving') return
+    setPhase('leaving')
+    timers.current.push(window.setTimeout(onEnter, 780))
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      handleEnter()
+      if (phase === 'ready') handleEnter()
     }
   }
 
   return (
     <div
-      className={`cine-intro ${isOpen ? 'is-open' : ''} ${
-        phase === 'turning' ? 'is-turning' : ''
-      } ${phase === 'leaving' ? 'is-leaving' : ''}`}
+      className={`doc-intro beat-${beat} is-${phase}`}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="cine-hint"
+      aria-labelledby="doc-intro-brand"
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
     >
-      <p className="cine-hint" id="cine-hint">
-        {isBusy ? 'Opening…' : isOpen ? 'Click to enter' : 'Hover to open the book'}
-      </p>
+      <div className="doc-intro-media" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=2400&q=80"
+          alt=""
+        />
+        <div className="doc-intro-shade" />
+        <div className="doc-intro-grain" />
+      </div>
 
-      <div className="cine-stage">
-        <div className="cine-glow" aria-hidden="true" />
+      <div className="doc-intro-frame" aria-hidden="true">
+        <span className="doc-frame-edge doc-frame-top" />
+        <span className="doc-frame-edge doc-frame-bottom" />
+      </div>
 
-        <div
-          className="cine-book"
-          role="button"
-          tabIndex={0}
-          aria-label="Open the book and enter the site"
-          onMouseEnter={() => !isBusy && setHovered(true)}
-          onMouseLeave={() => !isBusy && setHovered(false)}
-          onFocus={() => !isBusy && setHovered(true)}
-          onBlur={() => !isBusy && setHovered(false)}
-          onClick={handleEnter}
-          onKeyDown={handleKeyDown}
-        >
-          <div className="cine-book-inner">
-            {/* Base page — the last one revealed before the bloom */}
-            <div className="cine-page" aria-hidden="true">
-              <span className="cine-page-diamond" />
-            </div>
+      <div className="doc-intro-copy">
+        <p className="doc-intro-eyebrow">
+          Research · Film · Conversation
+        </p>
 
-            {/* Rune leaves beneath the title leaf — enchanted writing */}
-            {RUNE_LEAVES.map((lines, i) => (
-              <div
-                className="cine-leaf"
-                key={`rune-${i}`}
-                style={
-                  {
-                    '--i': i + 1,
-                    '--leaf-end': `${-(167 - (i + 1) * 1.1)}deg`,
-                  } as CSSProperties
-                }
-                aria-hidden="true"
-              >
-                <div className="cine-leaf-face">
-                  <div className="cine-rune-page">
-                    {lines.map((line, j) => (
-                      <span className="cine-rune-line" key={j}>
-                        {line}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
+        <p className="doc-intro-brand" id="doc-intro-brand">
+          Who Invited Us<span aria-hidden="true">?</span>
+        </p>
 
-            {/* Title leaf — first page you see, first to turn */}
-            <div
-              className="cine-leaf"
-              style={{ '--i': 0, '--leaf-end': '-167deg' } as CSSProperties}
-              aria-hidden="true"
-            >
-              <div className="cine-leaf-face">
-                <div className="cine-title-page">
-                  <span className="cine-page-rule" />
-                  <p className="cine-page-title">
-                    Who Invited
-                    <br />
-                    Us?
-                  </p>
-                  <p className="cine-page-sub">
-                    Research-driven stories about
-                    <br />
-                    how young people live and think
-                  </p>
-                  <span className="cine-page-rule" />
-                </div>
-              </div>
-            </div>
+        <p className="doc-intro-baseline">Samaira Bhatia · Palak Gupta</p>
 
-            {/* Front cover — hinged at the spine */}
-            <div className="cine-cover" aria-hidden="true">
-              <div className="cine-cover-front">
-                <div className="cine-cover-art">
-                  <p className="cine-cover-title">
-                    <span>Who</span>
-                    <span>Invited Us?</span>
-                  </p>
-                  <span className="cine-cover-rule" />
-                  <span className="cine-cover-diamond" />
-                </div>
-              </div>
-              <div className="cine-cover-back" />
-            </div>
-          </div>
+        <p className="doc-intro-lede">
+          Stories and evidence about how young people live and think —
+          documentaries, interviews, surveys, and room for your judgment.
+        </p>
 
-          <div className="cine-book-shadow" aria-hidden="true" />
-        </div>
-
-        {/* Ivory bloom that swallows the screen on exit */}
-        <div className="cine-bloom" aria-hidden="true">
-          <span className="cine-bloom-dot" />
+        <div className="doc-intro-actions">
+          <button
+            type="button"
+            className="doc-intro-enter"
+            onClick={handleEnter}
+            disabled={phase === 'leaving'}
+          >
+            Enter the archive
+            <span aria-hidden="true"> →</span>
+          </button>
+          <p className="doc-intro-hint">or press Enter</p>
         </div>
       </div>
 
-      <button type="button" className="cine-skip" onClick={onEnter}>
-        Skip intro
+      <button type="button" className="doc-intro-skip" onClick={onEnter}>
+        Skip
       </button>
+
+      <div className="doc-intro-bloom" aria-hidden="true" />
     </div>
   )
 }
 
 export default BookIntro
-
-
