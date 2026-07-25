@@ -1,4 +1,4 @@
-/* Animated Liminal mark — realistic DNA helix + fingerprint whorls */
+/* Liminal mark — DNA + flat 2D portals in end gaps */
 
 .liminal-logo {
   --lim-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -10,7 +10,7 @@
 }
 
 .liminal-logo--intro {
-  width: clamp(11.5rem, 34vw, 16.5rem);
+  width: clamp(12rem, 36vw, 17.5rem);
 }
 
 .liminal-logo--mark {
@@ -24,120 +24,117 @@
 }
 
 .liminal-logo-bloom {
-  transform-origin: 110px 110px;
-  animation: lim-bloom 4.2s ease-in-out infinite;
+  transform-origin: 100px 100px;
+  animation: lim-bloom 5.5s ease-in-out infinite;
 }
 
-.liminal-logo-ring-spin {
-  transform-origin: 110px 110px;
-  animation: lim-spin 3.6s linear infinite;
+.liminal-logo-strand-dash {
+  animation: lim-dash-flow 3.6s linear infinite;
 }
 
-.liminal-logo-ring-spin-b {
-  animation: lim-spin-rev 5.4s linear infinite;
+/* Flat portal — fills full gap, translucent */
+.liminal-portal-fill {
+  opacity: 0.78;
+  animation: lim-portal-fill 3.6s ease-in-out infinite;
 }
 
-/* DNA climbs / twists like a rotating helix */
-.liminal-logo-dna {
-  transform-origin: 110px 110px;
-  animation: lim-dna-twist 4.5s var(--lim-ease) infinite;
+.liminal-portal-wash {
+  opacity: 0.85;
+  animation: lim-portal-wash 4s ease-in-out infinite;
 }
 
-.liminal-logo-strand-a {
-  stroke-dasharray: 14 10;
-  animation: lim-strand-flow 2.2s linear infinite;
+.liminal-portal-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lim-portal-pulse 3.2s ease-in-out infinite;
 }
 
-.liminal-logo-strand-b {
-  animation: lim-strand-flow-rev 2.6s linear infinite;
+.liminal-portal-ring.r2 {
+  animation-delay: -0.4s;
 }
-
-.liminal-logo-rung {
-  animation: lim-rung-pulse 2.2s ease-in-out infinite;
-}
-
-.liminal-logo-rung:nth-child(odd) {
-  animation-delay: -0.35s;
-}
-
-.liminal-logo-rung:nth-child(3n) {
+.liminal-portal-ring.r3 {
   animation-delay: -0.8s;
 }
-
-/* Fingerprints — opacity only so SVG translate/scale stays intact */
-.liminal-logo-print {
-  animation: lim-print-breathe 3.4s ease-in-out infinite;
-  filter: drop-shadow(0 1px 6px rgba(40, 100, 110, 0.35));
+.liminal-portal-ring.r4 {
+  animation-delay: -1.2s;
 }
 
-.liminal-logo-print-top {
-  filter: drop-shadow(0 1px 6px rgba(110, 60, 150, 0.4));
+.liminal-portal--delay .liminal-portal-fill {
+  animation-delay: -1.4s;
+}
+.liminal-portal--delay .liminal-portal-wash {
+  animation-delay: -1.8s;
+}
+.liminal-portal--delay .liminal-portal-ring {
+  animation-delay: -1.6s;
+}
+.liminal-portal--delay .liminal-portal-ring.r2 {
+  animation-delay: -2s;
+}
+.liminal-portal--delay .liminal-portal-ring.r3 {
+  animation-delay: -2.4s;
+}
+.liminal-portal--delay .liminal-portal-ring.r4 {
+  animation-delay: -2.8s;
+}
+.liminal-portal--delay .liminal-portal-ripple {
+  animation-delay: -1.1s;
+}
+.liminal-portal--delay .liminal-portal-core {
+  animation-delay: -0.9s;
 }
 
-.liminal-logo-print-bot {
-  animation-delay: -1.5s;
+.liminal-portal-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lim-portal-ripple 2.8s ease-out infinite;
 }
 
-/* Opacity/filter only — SVG translate must stay on the element */
-.liminal-logo-star {
-  animation: lim-twinkle 2.6s ease-in-out infinite;
+.liminal-portal-core {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lim-portal-core 2.4s ease-in-out infinite;
 }
 
-.liminal-logo-star.s2 { animation-delay: -0.4s; }
-.liminal-logo-star.s3 { animation-delay: -0.9s; }
-.liminal-logo-star.s4 { animation-delay: -1.3s; }
-.liminal-logo-star.s5 { animation-delay: -0.2s; }
-.liminal-logo-star.s6 { animation-delay: -1.7s; }
-.liminal-logo-star.s7 { animation-delay: -0.7s; }
-.liminal-logo-star.s8 { animation-delay: -1.1s; }
-.liminal-logo-star.s9 { animation-delay: -1.9s; }
-
-@keyframes lim-spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes lim-spin-rev {
-  to { transform: rotate(-360deg); }
-}
-
-@keyframes lim-dna-twist {
+@keyframes lim-bloom {
   0%,
   100% {
-    transform: translateY(0) scaleX(1) rotate(0deg);
-  }
-  40% {
-    transform: translateY(-5px) scaleX(1.05) rotate(-1.2deg);
-  }
-  70% {
-    transform: translateY(3px) scaleX(0.97) rotate(1deg);
-  }
-}
-
-@keyframes lim-strand-flow {
-  to { stroke-dashoffset: -48; }
-}
-
-@keyframes lim-strand-flow-rev {
-  to { stroke-dashoffset: 48; }
-}
-
-@keyframes lim-rung-pulse {
-  0%,
-  100% { opacity: 0.35; }
-  50% { opacity: 0.95; }
-}
-
-@keyframes lim-print-breathe {
-  0%,
-  100% {
-    opacity: 0.88;
+    opacity: 0.72;
+    transform: scale(0.985);
   }
   50% {
     opacity: 1;
+    transform: scale(1.03);
   }
 }
 
-@keyframes lim-twinkle {
+@keyframes lim-dash-flow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+@keyframes lim-portal-fill {
+  0%,
+  100% {
+    opacity: 0.68;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+@keyframes lim-portal-wash {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes lim-portal-pulse {
   0%,
   100% {
     opacity: 0.45;
@@ -147,32 +144,54 @@
   }
 }
 
-@keyframes lim-bloom {
+@keyframes lim-portal-ripple {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.55);
+  }
+  70% {
+    opacity: 0.2;
+    transform: scale(2.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.35);
+  }
+}
+
+@keyframes lim-portal-core {
   0%,
   100% {
-    opacity: 0.65;
-    transform: scale(0.96);
+    opacity: 0.75;
+    transform: scale(0.9);
   }
   50% {
     opacity: 1;
-    transform: scale(1.07);
+    transform: scale(1.15);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .liminal-logo-bloom,
-  .liminal-logo-ring-spin,
-  .liminal-logo-ring-spin-b,
-  .liminal-logo-dna,
-  .liminal-logo-strand-a,
-  .liminal-logo-strand-b,
-  .liminal-logo-rung,
-  .liminal-logo-print,
-  .liminal-logo-star {
+  .liminal-logo-strand-dash,
+  .liminal-portal-fill,
+  .liminal-portal-wash,
+  .liminal-portal-ring,
+  .liminal-portal-ripple,
+  .liminal-portal-core {
     animation: none;
   }
 
-  .liminal-logo-ring-spin {
-    stroke-dasharray: 240 325;
+  .liminal-portal-fill {
+    opacity: 0.75;
+  }
+
+  .liminal-portal-ring,
+  .liminal-portal-core {
+    opacity: 0.75;
+  }
+
+  .liminal-portal-ripple {
+    opacity: 0;
   }
 }

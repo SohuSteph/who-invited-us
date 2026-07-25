@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 228" role="img" aria-label="Liminal">
+  <defs>
+    <linearGradient id="lim-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="50%" stop-color="#1f1f1f"/>
+      <stop offset="100%" stop-color="#3a3a3a"/>
+    </linearGradient>
+    <linearGradient id="lim-strand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="55%" stop-color="#1f1f1f"/>
+      <stop offset="100%" stop-color="#3d2a48"/>
+    </linearGradient>
+    <radialGradient id="lim-pocket" cx="42%" cy="38%" r="68%">
+      <stop offset="0%" stop-color="#c4a8d4"/>
+      <stop offset="45%" stop-color="#8f6a9e"/>
+      <stop offset="100%" stop-color="#4a2c5a"/>
+    </radialGradient>
+    <clipPath id="lim-ring-clip">
+      <circle cx="110" cy="114" r="78"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#lim-ring-clip)">
+    <path d="M110 48 C128 48, 142 62, 142 78 C142 94, 128 104, 110 104 C92 104, 78 94, 78 78 C78 62, 92 48, 110 48 Z" fill="url(#lim-pocket)"/>
+    <path d="M110 120 C128 120, 142 134, 142 150 C142 166, 128 176, 110 176 C92 176, 78 166, 78 150 C78 134, 92 120, 110 120 Z" fill="url(#lim-pocket)"/>
+    <g transform="translate(110 76) scale(0.92)">
+      <ellipse cx="0" cy="0" rx="22" ry="28" fill="url(#lim-pocket)"/>
+      <ellipse cx="0" cy="1" rx="18" ry="23" fill="none" stroke="#6b3d7a" stroke-width="1.15" opacity="0.85"/>
+      <ellipse cx="0" cy="1" rx="14.5" ry="18.5" fill="none" stroke="#7a4a88" stroke-width="1.05"/>
+      <ellipse cx="0" cy="1.5" rx="11" ry="14" fill="none" stroke="#8a5a98" stroke-width="1"/>
+      <ellipse cx="0" cy="2" rx="7.5" ry="9.5" fill="none" stroke="#9b6aa8" stroke-width="0.95"/>
+      <ellipse cx="-0.5" cy="2" rx="4.2" ry="5.4" fill="none" stroke="#b08abc" stroke-width="0.9"/>
+      <circle cx="0" cy="2" r="1.6" fill="#4a2c5a" opacity="0.55"/>
+    </g>
+    <g transform="translate(110 148) scale(0.92)">
+      <ellipse cx="0" cy="0" rx="22" ry="28" fill="url(#lim-pocket)"/>
+      <ellipse cx="0" cy="1" rx="18" ry="23" fill="none" stroke="#6b3d7a" stroke-width="1.15" opacity="0.85"/>
+      <ellipse cx="0" cy="1" rx="14.5" ry="18.5" fill="none" stroke="#7a4a88" stroke-width="1.05"/>
+      <ellipse cx="0" cy="1.5" rx="11" ry="14" fill="none" stroke="#8a5a98" stroke-width="1"/>
+      <ellipse cx="0" cy="2" rx="7.5" ry="9.5" fill="none" stroke="#9b6aa8" stroke-width="0.95"/>
+      <ellipse cx="-0.5" cy="2" rx="4.2" ry="5.4" fill="none" stroke="#b08abc" stroke-width="0.9"/>
+      <circle cx="0" cy="2" r="1.6" fill="#4a2c5a" opacity="0.55"/>
+    </g>
+  </g>
+
+  <circle cx="110" cy="114" r="78" fill="none" stroke="url(#lim-ring)" stroke-width="3.25"/>
+  <circle cx="110" cy="114" r="78" fill="none" stroke="#d4af37" stroke-width="0.6" opacity="0.45"/>
+
+  <path d="M110 8 C92 18, 78 34, 76 52 C74 72, 88 86, 110 92 C132 98, 148 112, 146 132 C144 154, 128 172, 110 184 C96 192, 90 204, 92 220" fill="none" stroke="url(#lim-strand)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M110 8 C128 18, 142 34, 144 52 C146 72, 132 86, 110 92 C88 98, 72 112, 74 132 C76 154, 92 172, 110 184 C124 192, 130 204, 128 220" fill="none" stroke="url(#lim-strand)" stroke-width="2.85" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5.5 4.5"/>
+</svg>

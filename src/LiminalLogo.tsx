@@ -5,19 +5,35 @@ type LiminalLogoProps = {
   size?: 'intro' | 'mark'
 }
 
-type Pt = { x: number; y: number; z: number }
+type Pt = { x: number; y: number }
 
-function buildHelix(cx: number, top: number, bottom: number, amp: number, turns: number, samples: number) {
-  const a: Pt[] = []
-  const b: Pt[] = []
-  for (let i = 0; i <= samples; i++) {
-    const t = i / samples
-    const y = top + (bottom - top) * t
-    const angle = t * turns * Math.PI * 2
-    a.push({ x: cx + amp * Math.sin(angle), y, z: Math.cos(angle) })
-    b.push({ x: cx + amp * Math.sin(angle + Math.PI), y, z: Math.cos(angle + Math.PI) })
+type Pocket = {
+  path: string
+  cx: number
+  cy: number
+  rx: number
+  ry: number
+}
+
+function toCurvePath(pts: Pt[]) {
+  if (pts.length < 2) return ''
+  if (pts.length === 2) {
+    return `M${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)} L${pts[1].x.toFixed(2)} ${pts[1].y.toFixed(2)}`
   }
-  return { a, b }
+
+  let d = `M${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[i + 2] ?? p2
+    const c1x = p1.x + (p2.x - p0.x) / 6
+    const c1y = p1.y + (p2.y - p0.y) / 6
+    const c2x = p2.x - (p3.x - p1.x) / 6
+    const c2y = p2.y - (p3.y - p1.y) / 6
+    d += ` C${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`
+  }
+  return d
 }
 
 function toPath(pts: Pt[]) {
@@ -26,218 +42,198 @@ function toPath(pts: Pt[]) {
     .join(' ')
 }
 
-function depthPath(pts: Pt[], front: boolean) {
-  const chunks: string[] = []
-  let chunk: Pt[] = []
+/**
+ * One full turn → two end pockets + a true open crossing in the middle.
+ */
+function buildDnaStrip(
+  cx: number,
+  cy: number,
+  halfHeight: number,
+  amp: number,
+  samples: number,
+) {
+  const a: Pt[] = []
+  const b: Pt[] = []
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples
+    const y = cy - halfHeight + halfHeight * 2 * t
+    const angle = t * Math.PI * 2
+    // Wide at t=0.25 & 0.75 (pockets); narrow at t=0, 0.5, 1 (crossings / middle gap)
+    const waist = 0.28 + 0.72 * Math.pow(Math.abs(Math.sin(t * Math.PI * 2)), 0.85)
+    const r = amp * waist
+    a.push({ x: cx + r * Math.sin(angle), y })
+    b.push({ x: cx + r * Math.sin(angle + Math.PI), y })
+  }
+  return { a, b }
+}
 
-  const flush = () => {
-    if (chunk.length < 2) {
-      chunk = []
-      return
+/** Build the exact gap polygon + its fit ellipse for portal rings. */
+function buildPocket(
+  strandA: Pt[],
+  strandB: Pt[],
+  t0: number,
+  t1: number,
+  insetAmt: number,
+): Pocket | null {
+  const slice = (pts: Pt[]) =>
+    pts.filter((_, i) => {
+      const t = i / (pts.length - 1)
+      return t >= t0 && t <= t1
+    })
+
+  const left = slice(strandA)
+  const right = slice(strandB)
+  if (left.length < 3 || right.length < 3) return null
+
+  const inset = (p: Pt, other: Pt) => {
+    const mx = (p.x + other.x) / 2
+    const my = (p.y + other.y) / 2
+    return {
+      x: p.x + (mx - p.x) * insetAmt,
+      y: p.y + (my - p.y) * insetAmt,
     }
-    chunks.push(toPath(chunk))
-    chunk = []
   }
 
-  pts.forEach((p, i) => {
-    const isFront = p.z >= 0
-    if (isFront === front) {
-      if (chunk.length === 0 && i > 0) chunk.push(pts[i - 1])
-      chunk.push(p)
-    } else {
-      flush()
-    }
-  })
-  flush()
-  return chunks
+  const n = Math.min(left.length, right.length)
+  const L: Pt[] = []
+  const R: Pt[] = []
+  for (let i = 0; i < n; i++) {
+    L.push(inset(left[i], right[i]))
+    R.push(inset(right[i], left[i]))
+  }
+
+  const all = [...L, ...R]
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+  let sx = 0
+  let sy = 0
+  for (const p of all) {
+    minX = Math.min(minX, p.x)
+    maxX = Math.max(maxX, p.x)
+    minY = Math.min(minY, p.y)
+    maxY = Math.max(maxY, p.y)
+    sx += p.x
+    sy += p.y
+  }
+
+  const rev = [...R].reverse()
+  const path = `${toPath(L)} ${rev.map((p) => `L${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ')} Z`
+
+  return {
+    path,
+    cx: sx / all.length,
+    cy: sy / all.length,
+    // Slightly under half-size so rings sit inside the gap edges
+    rx: ((maxX - minX) / 2) * 0.82,
+    ry: ((maxY - minY) / 2) * 0.82,
+  }
 }
 
-/** Fingerprint whorl tinted to DNA strand colors (teal / violet). */
-function Fingerprint({
-  className,
-  transform,
-  tone,
-}: {
-  className: string
-  transform: string
-  tone: 'teal' | 'violet'
-}) {
-  const c =
-    tone === 'teal'
-      ? {
-          pad: 'url(#lim-print-pad-teal)',
-          core: 'url(#lim-print-core-teal)',
-          ridges: ['#1f6f6c', '#2a8a86', '#3aa39e', '#4db8b3', '#6ecfc9', '#8fe0db', '#b0efe9', '#d4f7f4'],
-        }
-      : {
-          pad: 'url(#lim-print-pad-violet)',
-          core: 'url(#lim-print-core-violet)',
-          ridges: ['#6a2f8a', '#7d3d9e', '#9450b6', '#b06dd4', '#c489e0', '#d5a4ea', '#e4c0f4', '#f0d8fa'],
-        }
-
-  return (
-    <g className={`liminal-logo-print ${className}`} transform={transform}>
-      <ellipse cx="0" cy="1" rx="16" ry="20" fill={c.pad} opacity="0.5" />
-
-      <path
-        d="M-15 -0.8 C-14.8 -13, -8.4 -19, 0 -19.4 C8.4 -19, 14.8 -13, 15 -0.8 C15.15 4.8, 11.4 11.2, 6.8 15.2 M-15 -0.8 C-15.15 4.8, -11.4 11.2, -6.8 15.2"
-        fill="none"
-        stroke={c.ridges[0]}
-        strokeWidth="1.25"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-12.6 -0.6 C-12.4 -10.8, -7 -15.8, 0 -16.1 C7 -15.8, 12.4 -10.8, 12.6 -0.6 C12.75 4.1, 9.5 9.5, 5.5 13 M-12.6 -0.6 C-12.75 4.1, -9.5 9.5, -5.5 13"
-        fill="none"
-        stroke={c.ridges[1]}
-        strokeWidth="1.15"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-10.2 -0.4 C-10.1 -8.8, -5.8 -12.8, 0 -13.1 C5.8 -12.8, 10.1 -8.8, 10.2 -0.4 C10.3 3.5, 7.6 8, 4.3 11 M-10.2 -0.4 C-10.3 3.5, -7.6 8, -4.3 11"
-        fill="none"
-        stroke={c.ridges[2]}
-        strokeWidth="1.1"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-7.8 -0.2 C-7.7 -6.9, -4.4 -10.2, 0 -10.4 C4.4 -10.2, 7.7 -6.9, 7.8 -0.2 C7.9 2.9, 5.8 6.6, 3.2 9 M-7.8 -0.2 C-7.9 2.9, -5.8 6.6, -3.2 9"
-        fill="none"
-        stroke={c.ridges[3]}
-        strokeWidth="1.05"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-5.5 0 C-5.4 -5.2, -3 -7.6, 0 -7.8 C3 -7.6, 5.4 -5.2, 5.5 0 C5.55 2.3, 4 5, 2.2 6.8 M-5.5 0 C-5.55 2.3, -4 5, -2.2 6.8"
-        fill="none"
-        stroke={c.ridges[4]}
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-3.2 0.2 C-3.15 -3.4, -1.7 -5.1, 0 -5.2 C1.7 -5.1, 3.15 -3.4, 3.2 0.2 C3.25 1.6, 2.1 3.4, 1.05 4.5 M-3.2 0.2 C-3.25 1.6, -2.1 3.4, -1.05 4.5"
-        fill="none"
-        stroke={c.ridges[5]}
-        strokeWidth="0.95"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-1.35 0.35 C-1.3 -1.6, -0.65 -2.45, 0 -2.5 C0.65 -2.45, 1.3 -1.6, 1.35 0.35 C1.35 1.15, 0.8 1.85, 0.35 2.25 M-1.35 0.35 C-1.35 1.15, -0.8 1.85, -0.35 2.25"
-        fill="none"
-        stroke={c.ridges[6]}
-        strokeWidth="0.9"
-        strokeLinecap="round"
-      />
-
-      <path
-        d="M-11.5 4 C-9 8, -5 12, -1.6 14.2"
-        fill="none"
-        stroke={c.ridges[0]}
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-      <path
-        d="M11.5 4 C9 8, 5 12, 1.6 14.2"
-        fill="none"
-        stroke={c.ridges[0]}
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-8.2 7 C-5.5 10.2, -2.5 12.6, 0 13.5 C2.5 12.6, 5.5 10.2, 8.2 7"
-        fill="none"
-        stroke={c.ridges[2]}
-        strokeWidth="0.95"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-5.2 9.5 C-3.2 11.5, -1.4 12.8, 0 13.2 C1.4 12.8, 3.2 11.5, 5.2 9.5"
-        fill="none"
-        stroke={c.ridges[3]}
-        strokeWidth="0.9"
-        strokeLinecap="round"
-      />
-      <path
-        d="M-13.5 1.2 C-12 4.2, -9.8 7, -7.2 9.2"
-        fill="none"
-        stroke={c.ridges[1]}
-        strokeWidth="0.85"
-        strokeLinecap="round"
-      />
-      <path
-        d="M13.5 1.2 C12 4.2, 9.8 7, 7.2 9.2"
-        fill="none"
-        stroke={c.ridges[1]}
-        strokeWidth="0.85"
-        strokeLinecap="round"
-      />
-
-      <circle cx="0" cy="0.5" r="1.25" fill={c.core} />
-    </g>
-  )
+type PortalProps = {
+  clipId: string
+  pocket: Pocket
+  variant: 'top' | 'bot'
 }
 
-/** White sparkle with a soft yellow hint. */
-function Star({
-  className,
-  cx,
-  cy,
-  r,
-}: {
-  className: string
-  cx: number
-  cy: number
-  r: number
-}) {
-  const arm = r * 2.4
-  const notch = r * 0.55
+/** Flat translucent portal fitted to the exact helix gap. */
+function FlatPortal({ clipId, pocket, variant }: PortalProps) {
+  const delay = variant === 'bot' ? 'liminal-portal--delay' : ''
+  const { path, cx, cy, rx, ry } = pocket
 
   return (
-    <g className={`liminal-logo-star ${className}`} transform={`translate(${cx} ${cy})`}>
-      <circle cx="0" cy="0" r={r * 2.8} fill="url(#lim-star-glow)" opacity="0.85" />
+    <g className={`liminal-portal ${delay}`} clipPath={`url(#${clipId})`}>
       <path
-        d={`M0 ${-arm}
-           C${notch * 0.2} ${-notch}, ${notch} ${-notch * 0.2}, ${arm} 0
-           C${notch} ${notch * 0.2}, ${notch * 0.2} ${notch}, 0 ${arm}
-           C${-notch * 0.2} ${notch}, ${-notch} ${notch * 0.2}, ${-arm} 0
-           C${-notch} ${-notch * 0.2}, ${-notch * 0.2} ${-notch}, 0 ${-arm}Z`}
-        fill="url(#lim-star-white)"
+        className="liminal-portal-fill"
+        d={path}
+        fill={`url(#lim-portal-fill-${variant})`}
       />
-      <circle cx="0" cy="0" r={r * 0.5} fill="#ffffff" opacity="0.95" />
+      <path
+        className="liminal-portal-wash"
+        d={path}
+        fill={`url(#lim-portal-wash-${variant})`}
+      />
+
+      <ellipse
+        className="liminal-portal-ring r1"
+        cx={cx}
+        cy={cy}
+        rx={rx}
+        ry={ry}
+        fill="none"
+        stroke="url(#lim-portal-ring)"
+        strokeWidth="1"
+      />
+      <ellipse
+        className="liminal-portal-ring r2"
+        cx={cx}
+        cy={cy}
+        rx={rx * 0.72}
+        ry={ry * 0.72}
+        fill="none"
+        stroke="url(#lim-portal-ring)"
+        strokeWidth="0.9"
+      />
+      <ellipse
+        className="liminal-portal-ring r3"
+        cx={cx}
+        cy={cy}
+        rx={rx * 0.46}
+        ry={ry * 0.46}
+        fill="none"
+        stroke="url(#lim-portal-ring)"
+        strokeWidth="0.8"
+      />
+      <ellipse
+        className="liminal-portal-ring r4"
+        cx={cx}
+        cy={cy}
+        rx={rx * 0.24}
+        ry={ry * 0.24}
+        fill="none"
+        stroke="#d4af37"
+        strokeWidth="0.65"
+      />
+
+      <ellipse
+        className="liminal-portal-ripple"
+        cx={cx}
+        cy={cy}
+        rx={rx * 0.3}
+        ry={ry * 0.3}
+        fill="none"
+        stroke="#d4af37"
+        strokeWidth="0.7"
+      />
+
+      <ellipse
+        className="liminal-portal-core"
+        cx={cx}
+        cy={cy}
+        rx={rx * 0.14}
+        ry={ry * 0.14}
+        fill={`url(#lim-portal-core-${variant})`}
+      />
     </g>
   )
 }
 
 function LiminalLogo({ className = '', size = 'intro' }: LiminalLogoProps) {
-  const { a, b } = buildHelix(110, 24, 196, 32, 2.15, 68)
-  const pathA = toPath(a)
-  const pathB = toPath(b)
-  const backA = depthPath(a, false)
-  const frontA = depthPath(a, true)
-  const backB = depthPath(b, false)
-  const frontB = depthPath(b, true)
+  const CX = 100
+  const CY = 100
+  const RING = 78
+  const INNER = RING - 10
+  const halfH = INNER * 0.86
+  const amp = INNER * 0.42
 
-  const rungs: {
-    x1: number
-    y1: number
-    x2: number
-    y2: number
-    front: boolean
-    kind: 'at' | 'cg'
-  }[] = []
-  for (let i = 2; i < a.length - 1; i += 3) {
-    const pa = a[i]
-    const pb = b[i]
-    if (Math.abs(pa.x - pb.x) < 12) continue
-    rungs.push({
-      x1: pa.x,
-      y1: pa.y,
-      x2: pb.x,
-      y2: pb.y,
-      front: (pa.z + pb.z) / 2 >= 0,
-      kind: i % 6 === 2 ? 'at' : 'cg',
-    })
-  }
+  const { a, b } = buildDnaStrip(CX, CY, halfH, amp, 140)
+  const pathSolid = toCurvePath(a)
+  const pathDash = toCurvePath(b)
+
+  // Top pocket ~t=0.25, bottom ~t=0.75; middle crossing left empty
+  const top = buildPocket(a, b, 0.08, 0.42, 0.12)
+  const bot = buildPocket(a, b, 0.58, 0.92, 0.12)
 
   return (
     <div
@@ -246,246 +242,212 @@ function LiminalLogo({ className = '', size = 'intro' }: LiminalLogoProps) {
     >
       <svg
         className="liminal-logo-svg"
-        viewBox="0 0 220 220"
+        viewBox="0 0 200 200"
         xmlns="http://www.w3.org/2000/svg"
         role="img"
+        aria-label="Liminal"
       >
         <defs>
-          {/* White circle with faint warm edge */}
-          <linearGradient id="lim-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="70%" stopColor="#f7f4ec" />
-            <stop offset="100%" stopColor="#efe6c8" />
+          <linearGradient id="lim-ring" x1="12%" y1="8%" x2="88%" y2="92%">
+            <stop offset="0%" stopColor="#3a3a3a" />
+            <stop offset="40%" stopColor="#1f1f1f" />
+            <stop offset="100%" stopColor="#2a2430" />
           </linearGradient>
 
-          <linearGradient id="lim-strand-teal" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#b8f3ef" />
-            <stop offset="45%" stopColor="#4db8b3" />
-            <stop offset="100%" stopColor="#1f6f6c" />
-          </linearGradient>
-          <linearGradient id="lim-strand-violet" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#f0c6ff" />
-            <stop offset="45%" stopColor="#b06dd4" />
-            <stop offset="100%" stopColor="#6a2f8a" />
+          <linearGradient id="lim-strand" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#2e2e2e" />
+            <stop offset="45%" stopColor="#1f1f1f" />
+            <stop offset="100%" stopColor="#3a2a42" />
           </linearGradient>
 
-          <linearGradient id="lim-rung-at" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#f0a35e" />
-            <stop offset="100%" stopColor="#e36b7a" />
-          </linearGradient>
-          <linearGradient id="lim-rung-cg" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6ec4f0" />
-            <stop offset="100%" stopColor="#7ddea0" />
+          <linearGradient id="lim-strand-sheen" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#d4af37" stopOpacity="0" />
+            <stop offset="50%" stopColor="#d4af37" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
           </linearGradient>
 
-          <radialGradient id="lim-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#6a3d7a" stopOpacity="0.4" />
-            <stop offset="45%" stopColor="#2f6b68" stopOpacity="0.14" />
+          <radialGradient id="lim-portal-fill-top" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stopColor="#8a5a98" stopOpacity="0.7" />
+            <stop offset="50%" stopColor="#4a2c5a" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#2a1834" stopOpacity="0.4" />
+          </radialGradient>
+          <radialGradient id="lim-portal-fill-bot" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stopColor="#7a4a88" stopOpacity="0.68" />
+            <stop offset="50%" stopColor="#4a2c5a" stopOpacity="0.52" />
+            <stop offset="100%" stopColor="#241428" stopOpacity="0.38" />
+          </radialGradient>
+
+          <radialGradient id="lim-portal-wash-top" cx="45%" cy="40%" r="60%">
+            <stop offset="0%" stopColor="#d4af37" stopOpacity="0.16" />
+            <stop offset="45%" stopColor="#b892c4" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#4a2c5a" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="lim-portal-wash-bot" cx="55%" cy="55%" r="60%">
+            <stop offset="0%" stopColor="#d4af37" stopOpacity="0.14" />
+            <stop offset="45%" stopColor="#a078b0" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#4a2c5a" stopOpacity="0" />
+          </radialGradient>
+
+          <linearGradient id="lim-portal-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#c4a8d4" />
+            <stop offset="50%" stopColor="#8a5a98" />
+            <stop offset="100%" stopColor="#4a2c5a" />
+          </linearGradient>
+
+          <radialGradient id="lim-portal-core-top" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#d4af37" stopOpacity="0.85" />
+            <stop offset="55%" stopColor="#6b3d7a" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#1f1228" stopOpacity="0.65" />
+          </radialGradient>
+          <radialGradient id="lim-portal-core-bot" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#d4af37" stopOpacity="0.85" />
+            <stop offset="55%" stopColor="#5a3068" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#1a0f22" stopOpacity="0.65" />
+          </radialGradient>
+
+          <radialGradient id="lim-disc" cx="42%" cy="38%" r="62%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.12" />
+            <stop offset="55%" stopColor="#f8f6f2" stopOpacity="0.04" />
             <stop offset="100%" stopColor="#1f1f1f" stopOpacity="0" />
           </radialGradient>
 
-          <radialGradient id="lim-print-pad-teal" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#8fe0db" stopOpacity="0.4" />
-            <stop offset="60%" stopColor="#4db8b3" stopOpacity="0.16" />
-            <stop offset="100%" stopColor="#1f6f6c" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="lim-print-pad-violet" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#d5a4ea" stopOpacity="0.4" />
-            <stop offset="60%" stopColor="#b06dd4" stopOpacity="0.16" />
-            <stop offset="100%" stopColor="#6a2f8a" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="lim-print-core-teal" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#e8fffc" />
-            <stop offset="55%" stopColor="#6ecfc9" />
-            <stop offset="100%" stopColor="#2a8a86" />
-          </radialGradient>
-          <radialGradient id="lim-print-core-violet" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#f8ecff" />
-            <stop offset="55%" stopColor="#c489e0" />
-            <stop offset="100%" stopColor="#7d3d9e" />
+          <radialGradient id="lim-glow" cx="50%" cy="48%" r="52%">
+            <stop offset="0%" stopColor="#4a2c5a" stopOpacity="0.2" />
+            <stop offset="50%" stopColor="#d4af37" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="#1f1f1f" stopOpacity="0" />
           </radialGradient>
 
-          {/* White stars with a soft yellow sparkle */}
-          <radialGradient id="lim-star-white" cx="40%" cy="35%" r="70%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="55%" stopColor="#fff8e8" />
-            <stop offset="100%" stopColor="#f0e0a8" />
-          </radialGradient>
-          <radialGradient id="lim-star-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fff6d0" stopOpacity="0.7" />
-            <stop offset="55%" stopColor="#ffffff" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-          </radialGradient>
-
-          <filter id="lim-soft" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="0.85" result="b" />
+          <filter id="lim-soft" x="-15%" y="-15%" width="130%" height="130%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0.3" result="b" />
             <feMerge>
               <feMergeNode in="b" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+
+          <filter id="lim-depth" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow
+              dx="0"
+              dy="1"
+              stdDeviation="1.2"
+              floodColor="#1f1f1f"
+              floodOpacity="0.25"
+            />
+          </filter>
+
+          <clipPath id="lim-inside-ring">
+            <circle cx={CX} cy={CY} r={INNER} />
+          </clipPath>
+
+          {top ? (
+            <clipPath id="lim-gap-top">
+              <path d={top.path} />
+            </clipPath>
+          ) : null}
+          {bot ? (
+            <clipPath id="lim-gap-bot">
+              <path d={bot.path} />
+            </clipPath>
+          ) : null}
+
+          {/* Keep fill under strands — stroke knock-out matches DNA width */}
+          <mask id="lim-pocket-mask" maskUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="200" height="200" fill="white" />
+            <path
+              d={pathSolid}
+              fill="none"
+              stroke="black"
+              strokeWidth="4.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d={pathDash}
+              fill="none"
+              stroke="black"
+              strokeWidth="4.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </mask>
         </defs>
 
-        <circle className="liminal-logo-bloom" cx="110" cy="110" r="86" fill="url(#lim-glow)" />
+        <g filter="url(#lim-depth)">
+          <circle className="liminal-logo-bloom" cx={CX} cy={CY} r={RING + 6} fill="url(#lim-glow)" />
+          <circle cx={CX} cy={CY} r={RING - 1.5} fill="url(#lim-disc)" />
 
-        <g className="liminal-logo-ring">
+          <g clipPath="url(#lim-inside-ring)" mask="url(#lim-pocket-mask)">
+            {top ? <FlatPortal clipId="lim-gap-top" pocket={top} variant="top" /> : null}
+            {bot ? <FlatPortal clipId="lim-gap-bot" pocket={bot} variant="bot" /> : null}
+          </g>
+
           <circle
-            cx="110"
-            cy="110"
-            r="92"
-            fill="none"
-            stroke="rgba(248,246,242,0.12)"
-            strokeWidth="1.4"
-          />
-          <circle
-            className="liminal-logo-ring-spin"
-            cx="110"
-            cy="110"
-            r="92"
+            className="liminal-logo-ring"
+            cx={CX}
+            cy={CY}
+            r={RING}
             fill="none"
             stroke="url(#lim-ring)"
-            strokeWidth="2.25"
-            strokeLinecap="round"
-            strokeDasharray="215 363"
+            strokeWidth="3.2"
           />
           <circle
-            className="liminal-logo-ring-spin liminal-logo-ring-spin-b"
-            cx="110"
-            cy="110"
-            r="92"
+            cx={CX}
+            cy={CY}
+            r={RING - 2.1}
             fill="none"
-            stroke="rgba(255,255,255,0.55)"
-            strokeWidth="1.25"
-            strokeLinecap="round"
-            strokeDasharray="40 538"
-            strokeDashoffset="100"
+            stroke="#d4af37"
+            strokeWidth="0.7"
+            opacity="0.55"
           />
-        </g>
-
-        <g className="liminal-logo-dna">
-          <path
-            className="liminal-logo-strand liminal-logo-strand-a"
-            d={pathA}
+          <circle
+            cx={CX}
+            cy={CY}
+            r={RING + 1.6}
             fill="none"
-            stroke="rgba(77,184,179,0.28)"
-            strokeWidth="1.35"
-            strokeLinecap="round"
-          />
-          <path
-            className="liminal-logo-strand liminal-logo-strand-b"
-            d={pathB}
-            fill="none"
-            stroke="rgba(176,109,212,0.35)"
-            strokeWidth="1.35"
-            strokeLinecap="round"
-            strokeDasharray="4 5"
+            stroke="#1f1f1f"
+            strokeWidth="0.5"
+            opacity="0.2"
           />
 
-          <g opacity="0.32">
-            {backA.map((d, i) => (
-              <path
-                key={`ba-${i}`}
-                d={d}
-                fill="none"
-                stroke="#4db8b3"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
-            {backB.map((d, i) => (
-              <path
-                key={`bb-${i}`}
-                d={d}
-                fill="none"
-                stroke="#b06dd4"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
-            {rungs
-              .filter((r) => !r.front)
-              .map((r, i) => (
-                <line
-                  key={`rb-${i}`}
-                  className="liminal-logo-rung"
-                  x1={r.x1}
-                  y1={r.y1}
-                  x2={r.x2}
-                  y2={r.y2}
-                  stroke={r.kind === 'at' ? '#e36b7a' : '#6ec4f0'}
-                  strokeWidth="1.35"
-                  strokeLinecap="round"
-                  opacity="0.55"
-                />
-              ))}
+          <g className="liminal-logo-dna" clipPath="url(#lim-inside-ring)" filter="url(#lim-soft)">
+            <path
+              d={pathSolid}
+              fill="none"
+              stroke="url(#lim-strand-sheen)"
+              strokeWidth="4.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.55"
+            />
+            <path
+              d={pathDash}
+              fill="none"
+              stroke="url(#lim-strand-sheen)"
+              strokeWidth="4.1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.4"
+            />
+            <path
+              className="liminal-logo-strand liminal-logo-strand-solid"
+              d={pathSolid}
+              fill="none"
+              stroke="url(#lim-strand)"
+              strokeWidth="3.15"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              className="liminal-logo-strand liminal-logo-strand-dash"
+              d={pathDash}
+              fill="none"
+              stroke="url(#lim-strand)"
+              strokeWidth="2.85"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="5.8 4.2"
+            />
           </g>
-
-          {/* Fingerprints in helix pockets — DNA teal / violet tones */}
-          <Fingerprint
-            className="liminal-logo-print-top"
-            transform="translate(110 66) scale(0.95)"
-            tone="violet"
-          />
-          <Fingerprint
-            className="liminal-logo-print-bot"
-            transform="translate(110 154) scale(0.95)"
-            tone="teal"
-          />
-
-          <g filter="url(#lim-soft)">
-            {rungs
-              .filter((r) => r.front)
-              .map((r, i) => (
-                <line
-                  key={`rf-${i}`}
-                  className="liminal-logo-rung"
-                  x1={r.x1}
-                  y1={r.y1}
-                  x2={r.x2}
-                  y2={r.y2}
-                  stroke={r.kind === 'at' ? 'url(#lim-rung-at)' : 'url(#lim-rung-cg)'}
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                />
-              ))}
-            {frontA.map((d, i) => (
-              <path
-                key={`fa-${i}`}
-                d={d}
-                fill="none"
-                stroke="url(#lim-strand-teal)"
-                strokeWidth="3.35"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
-            {frontB.map((d, i) => (
-              <path
-                key={`fb-${i}`}
-                d={d}
-                fill="none"
-                stroke="url(#lim-strand-violet)"
-                strokeWidth="3.35"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
-          </g>
-        </g>
-
-        {/* White sparkles with a soft yellow tip */}
-        <g className="liminal-logo-stars">
-          <Star className="s1" cx={42} cy={66} r={2.4} />
-          <Star className="s2" cx={176} cy={54} r={2.1} />
-          <Star className="s3" cx={48} cy={152} r={2.3} />
-          <Star className="s4" cx={172} cy={158} r={2} />
-          <Star className="s5" cx={36} cy={108} r={1.7} />
-          <Star className="s6" cx={184} cy={112} r={1.9} />
-          <Star className="s7" cx={110} cy={26} r={2} />
-          <Star className="s8" cx={70} cy={38} r={1.5} />
-          <Star className="s9" cx={152} cy={182} r={1.6} />
         </g>
       </svg>
     </div>
