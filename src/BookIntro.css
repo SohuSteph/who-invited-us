@@ -1,4 +1,4 @@
-/* Manuscript title-sequence intro for Who Invited Us */
+/* Manuscript title-sequence intro for Liminal */
 
 .doc-intro {
   position: fixed;
@@ -209,18 +209,37 @@
   z-index: 3;
   max-width: min(40rem, 88vw);
   padding: clamp(2rem, 6vh, 4rem) var(--pad, 1.5rem);
-  text-align: left;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0;
+}
+
+.doc-intro-logo-wrap {
+  margin: 0 0 0.35rem;
+  opacity: 0;
+  transform: scale(0.86) translateY(16px);
+  transition:
+    opacity 1000ms var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 1100ms var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.doc-intro.beat-1 .doc-intro-logo-wrap,
+.doc-intro.beat-2 .doc-intro-logo-wrap,
+.doc-intro.beat-3 .doc-intro-logo-wrap,
+.doc-intro.beat-4 .doc-intro-logo-wrap,
+.doc-intro.beat-5 .doc-intro-logo-wrap {
+  opacity: 1;
+  transform: none;
 }
 
 .doc-intro-ornament,
 .doc-intro-eyebrow,
 .doc-intro-brand,
+.doc-intro-plus-rule,
+.doc-intro-subtitle,
 .doc-intro-baseline,
-.doc-intro-rule,
 .doc-intro-lede,
 .doc-intro-actions,
 .doc-intro-colophon {
@@ -254,8 +273,7 @@
   box-shadow: 0 0 0 1px rgba(168, 132, 32, 0.4);
 }
 
-.doc-intro.beat-1 .doc-intro-ornament,
-.doc-intro.beat-1 .doc-intro-eyebrow,
+/* Beat 1: animated logo alone. Beat 2+: lockup copy. */
 .doc-intro.beat-2 .doc-intro-ornament,
 .doc-intro.beat-2 .doc-intro-eyebrow,
 .doc-intro.beat-3 .doc-intro-ornament,
@@ -269,27 +287,35 @@
 }
 
 .doc-intro.beat-2 .doc-intro-brand,
+.doc-intro.beat-2 .doc-intro-plus-rule,
+.doc-intro.beat-2 .doc-intro-subtitle,
 .doc-intro.beat-2 .doc-intro-baseline,
-.doc-intro.beat-2 .doc-intro-rule,
 .doc-intro.beat-3 .doc-intro-brand,
+.doc-intro.beat-3 .doc-intro-plus-rule,
+.doc-intro.beat-3 .doc-intro-subtitle,
 .doc-intro.beat-3 .doc-intro-baseline,
-.doc-intro.beat-3 .doc-intro-rule,
 .doc-intro.beat-4 .doc-intro-brand,
+.doc-intro.beat-4 .doc-intro-plus-rule,
+.doc-intro.beat-4 .doc-intro-subtitle,
 .doc-intro.beat-4 .doc-intro-baseline,
-.doc-intro.beat-4 .doc-intro-rule,
 .doc-intro.beat-5 .doc-intro-brand,
-.doc-intro.beat-5 .doc-intro-baseline,
-.doc-intro.beat-5 .doc-intro-rule {
+.doc-intro.beat-5 .doc-intro-plus-rule,
+.doc-intro.beat-5 .doc-intro-subtitle,
+.doc-intro.beat-5 .doc-intro-baseline {
   opacity: 1;
   transform: none;
 }
 
-.doc-intro.beat-2 .doc-intro-baseline {
-  transition-delay: 140ms;
+.doc-intro.beat-2 .doc-intro-plus-rule {
+  transition-delay: 90ms;
 }
 
-.doc-intro.beat-2 .doc-intro-rule {
-  transition-delay: 220ms;
+.doc-intro.beat-2 .doc-intro-subtitle {
+  transition-delay: 160ms;
+}
+
+.doc-intro.beat-2 .doc-intro-baseline {
+  transition-delay: 240ms;
 }
 
 .doc-intro.beat-3 .doc-intro-lede,
@@ -312,8 +338,12 @@
   transition-delay: 180ms;
 }
 
+.doc-intro-ornament {
+  margin: 0.35rem 0 0.85rem;
+}
+
 .doc-intro-eyebrow {
-  margin: 0 0 1.05rem;
+  margin: 0 0 0.85rem;
   font-family: var(--ornament, 'Cinzel', serif);
   font-size: 0.78rem;
   font-weight: 600;
@@ -324,37 +354,66 @@
 
 .doc-intro-brand {
   margin: 0;
-  font-family: var(--ornament, 'Cinzel', serif);
-  font-size: clamp(2.4rem, 7.5vw, 4.8rem);
-  font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: 0.02em;
+  font-family: var(--display, 'Barlow Condensed', sans-serif);
+  font-size: clamp(2.6rem, 8vw, 4.6rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: #fff;
   text-wrap: balance;
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.4);
 }
 
+.doc-intro-plus-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: min(14rem, 70vw);
+  margin: 0.85rem 0 0;
+}
+
+.doc-intro-plus-rule > span:first-child,
+.doc-intro-plus-rule > span:last-child {
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold, #d4af37),
+    transparent
+  );
+}
+
+.doc-intro-plus {
+  flex: 0 0 auto;
+  font-family: var(--display, 'Barlow Condensed', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--gold, #d4af37);
+}
+
+.doc-intro-subtitle {
+  margin: 0.75rem 0 0;
+  font-family: var(--sans, 'Barlow', sans-serif);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  color: rgba(248, 246, 242, 0.78);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+}
+
 .doc-intro-baseline {
-  margin: 1rem 0 0;
+  margin: 0.85rem 0 0;
   font-family: var(--display, 'Barlow Condensed', sans-serif);
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(248, 246, 242, 0.72);
-}
-
-.doc-intro-rule {
-  width: 3.25rem;
-  height: 2px;
-  margin: 1.35rem 0 0;
-  background: linear-gradient(
-    90deg,
-    var(--gold-deep, #a88420),
-    var(--gold, #d4af37),
-    var(--gold-deep, #a88420)
-  );
-  box-shadow: 0 4px 0 -2px rgba(212, 175, 55, 0.35);
 }
 
 .doc-intro-lede {
@@ -379,6 +438,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 1rem 1.35rem;
 }
 
@@ -481,12 +541,9 @@
 }
 
 @media (max-width: 640px) {
-  .doc-intro-copy {
-    text-align: left;
-  }
-
   .doc-intro-brand {
     font-size: clamp(2.1rem, 11vw, 3rem);
+    letter-spacing: 0.16em;
   }
 
   .doc-frame-rail {
@@ -500,11 +557,13 @@
     transform: none;
   }
 
+  .doc-intro-logo-wrap,
   .doc-intro-ornament,
   .doc-intro-eyebrow,
   .doc-intro-brand,
+  .doc-intro-plus-rule,
+  .doc-intro-subtitle,
   .doc-intro-baseline,
-  .doc-intro-rule,
   .doc-intro-lede,
   .doc-intro-actions,
   .doc-intro-colophon,

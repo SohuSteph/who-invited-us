@@ -138,6 +138,7 @@ function App() {
 
     const revealSelectors = [
       '.hero-brand',
+      '.hero-subtitle',
       '.hero-baseline',
       '.hero-headline',
       '.hero-lede',
@@ -197,6 +198,23 @@ function App() {
         Skip to content
       </a>
 
+      <a
+        className="vulx-watermark"
+        href="https://vulxcreations.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Vulx Creations portfolio"
+      >
+        <img
+          className="vulx-watermark-mark"
+          src="/vulx-creations-mark.png"
+          alt=""
+          width={1024}
+          height={682}
+          decoding="async"
+        />
+      </a>
+
       <header className="site-header">
         <div className="header-filigree" aria-hidden="true" />
         <nav className="nav" aria-label="Primary">
@@ -212,10 +230,8 @@ function App() {
             </li>
           </ul>
 
-          <a className="brand" href="#top" aria-label="Who Invited Us home">
-            <span className="brand-name">
-              Who Invited Us<span aria-hidden="true">?</span>
-            </span>
+          <a className="brand" href="#top" aria-label="Liminal home">
+            <span className="brand-name">Liminal</span>
             <span className="brand-baseline">Samaira Bhatia · Palak Gupta</span>
           </a>
 
@@ -251,8 +267,9 @@ function App() {
               <span />
             </div>
             <p className="hero-brand" id="hero-brand">
-              Who Invited Us<span aria-hidden="true">?</span>
+              Liminal
             </p>
+            <p className="hero-subtitle">state of being in between</p>
             <p className="hero-baseline">Samaira Bhatia · Palak Gupta</p>
             <h1 className="hero-headline">
               Conversations, research, and room for your judgment.
@@ -289,7 +306,7 @@ function App() {
             </h2>
             <div className="spotlight-grid">
               <p className="drop-cap">
-                Who Invited Us? is a research-driven storytelling initiative that explores
+                Liminal is a research-driven storytelling initiative that explores
                 the experiences, challenges, and aspirations of young people through
                 podcasts, documentaries, interviews, surveys, and public reports.
               </p>
@@ -568,7 +585,7 @@ function App() {
               </p>
               <a
                 className="btn-primary"
-                href="mailto:hello@whoinvitedus.org?subject=Who%20Invited%20Us%20—%20I'd%20like%20to%20help"
+                href="mailto:hello@liminal.studio?subject=Liminal%20—%20I'd%20like%20to%20help"
               >
                 Reach out <span aria-hidden="true">→</span>
               </a>
@@ -583,12 +600,34 @@ function App() {
           <span className="ornament-diamond" />
           <span className="ornament-line" />
         </div>
-        <p className="footer-brand">Who Invited Us?</p>
+        <p className="footer-brand">Liminal</p>
+        <p className="footer-subtitle">state of being in between</p>
         <p className="footer-baseline">Samaira Bhatia · Palak Gupta</p>
         <p className="footer-note">
           Podcast conversations, research documents, and space for public judgment.
         </p>
         <p className="footer-colophon">Archive · Research · Judgment</p>
+        <div className="footer-developer">
+          <span className="footer-developer-label">Done by</span>
+          <a
+            href="https://vulxcreations.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-developer-link"
+            aria-label="Vulx Creations portfolio"
+          >
+            <span className="footer-developer-name">Vulx Creations</span>
+            <img
+              className="footer-developer-mark"
+              src="/vulx-creations-mark.png"
+              alt=""
+              width={1024}
+              height={682}
+              decoding="async"
+              aria-hidden="true"
+            />
+          </a>
+        </div>
         <p className="footer-year">© {new Date().getFullYear()}</p>
       </footer>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import LiminalLogo from './LiminalLogo'
 import './BookIntro.css'
 
 type Phase = 'playing' | 'ready' | 'leaving'
@@ -17,11 +18,11 @@ function BookIntro({ onEnter }: BookIntroProps) {
       timers.current.push(window.setTimeout(fn, ms))
     }
 
-    schedule(280, () => setBeat(1))
-    schedule(900, () => setBeat(2))
-    schedule(1600, () => setBeat(3))
-    schedule(2300, () => setBeat(4))
-    schedule(3000, () => {
+    schedule(120, () => setBeat(1)) // logo + ring
+    schedule(1100, () => setBeat(2)) // brand lockup
+    schedule(1900, () => setBeat(3)) // lede
+    schedule(2600, () => setBeat(4)) // CTA
+    schedule(3300, () => {
       setBeat(5)
       setPhase('ready')
     })
@@ -78,6 +79,10 @@ function BookIntro({ onEnter }: BookIntroProps) {
       </div>
 
       <div className="doc-intro-copy">
+        <div className="doc-intro-logo-wrap">
+          <LiminalLogo size="intro" />
+        </div>
+
         <div className="doc-intro-ornament" aria-hidden="true">
           <span className="doc-ornament-line" />
           <span className="doc-ornament-diamond" />
@@ -87,12 +92,18 @@ function BookIntro({ onEnter }: BookIntroProps) {
         <p className="doc-intro-eyebrow">Research · Film · Conversation</p>
 
         <p className="doc-intro-brand" id="doc-intro-brand">
-          Who Invited Us<span aria-hidden="true">?</span>
+          LIMINAL
         </p>
 
-        <p className="doc-intro-baseline">Samaira Bhatia · Palak Gupta</p>
+        <div className="doc-intro-plus-rule" aria-hidden="true">
+          <span />
+          <span className="doc-intro-plus">+</span>
+          <span />
+        </div>
 
-        <div className="doc-intro-rule" aria-hidden="true" />
+        <p className="doc-intro-subtitle">The State of being in between.</p>
+
+        <p className="doc-intro-baseline">Samaira Bhatia · Palak Gupta</p>
 
         <p className="doc-intro-lede">
           Stories and evidence about how young people live and think —
